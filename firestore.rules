@@ -1,0 +1,299 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function me() { return request.auth.uid; }
+    function hasUserDoc() {
+      return signedIn() && exists(/databases/$(database)/documents/users/$(me()));
+    }
+    function myRole() {
+      return hasUserDoc()
+        ? get(/databases/$(database)/documents/users/$(me())).data.role
+        : "none";
+    }
+
+    function isStaff() { return myRole() in ["worker","manager","admin","superadmin","owner"]; }
+    function isWorker() { return myRole() == "worker"; }
+    function isManager() { return myRole() == "manager"; }
+    function isAdmin() { return myRole() == "admin"; }
+    function isSuperAdmin() { return myRole() == "superadmin"; }
+    function isOwner() { return myRole() == "owner"; }
+    function isApprover() { return myRole() in ["admin","superadmin","owner"]; }
+
+    function canCreateInviteForRole(targetRole) {
+      return (isOwner() && targetRole in ["owner","superadmin","admin","manager","worker"])
+        || (isSuperAdmin() && targetRole in ["admin","manager","worker"])
+        || (isAdmin() && targetRole in ["manager","worker"])
+        || (isManager() && targetRole == "worker");
+    }
+
+    function isBootstrapSuperAdminCreate(userId) {
+      return userId == "x5Lk3ZRvXfWD1a12eEZu2cIJRtn2"
+        && request.resource.data.role == "superadmin"
+        && request.resource.data.email == "suriyakssuriya@gmail.com";
+    }
+
+    function canCreateStaffFromInvite() {
+      let keyId = request.resource.data.inviteKeyUsed;
+      let keyPath = /databases/$(database)/documents/inviteKeys/$(keyId);
+      let keyExists = exists(keyPath);
+      let key = keyExists ? get(keyPath).data : {};
+      let maxUses = (key.maxUses is int) ? key.maxUses : 1;
+      let usedCount = (key.usedCount is int) ? key.usedCount : 0;
+      let notExpired = !key.keys().hasAny(["expiresAt"]) || key.expiresAt > request.time;
+
+      return keyId is string
+        && request.resource.data.role in ["worker","manager","admin","superadmin","owner"]
+        && keyExists
+        && key.scope == "staff"
+        && key.role == request.resource.data.role
+        && notExpired
+        && (
+          ((key.multiUse == true) || maxUses > 1)
+            ? usedCount < maxUses
+            : key.usedBy == null
+        );
+    }
+
+    function canSelfUpdateUser(userId) {
+      return userId == me()
+        && request.resource.data.role == resource.data.role
+        && request.resource.data.email == resource.data.email
+        && request.resource.data.referralCode == resource.data.referralCode
+        && request.resource.data.referralTier == resource.data.referralTier
+        && request.resource.data.discountPercent == resource.data.discountPercent
+        && request.resource.data.usedReferralCode == resource.data.usedReferralCode
+        && request.resource.data.referredBy == resource.data.referredBy
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.inviteKeyUsed == resource.data.inviteKeyUsed;
+    }
+
+    function canPrivilegedUpdateUser() {
+      return isOwner()
+        || (isSuperAdmin()
+          && resource.data.role != "owner"
+          && request.resource.data.role != "owner")
+        || (isAdmin()
+          && resource.data.role in ["customer","worker","manager","admin"]
+          && request.resource.data.role in ["customer","worker","manager","admin"])
+        || (isManager()
+          && resource.data.role in ["customer","worker"]
+          && request.resource.data.role in ["customer","worker"]);
+    }
+
+    function canConsumeInviteKey() {
+      let prev = resource.data;
+      let next = request.resource.data;
+      let maxUses = (prev.maxUses is int) ? prev.maxUses : 1;
+      let usedCount = (prev.usedCount is int) ? prev.usedCount : 0;
+      let notExpired = !prev.keys().hasAny(["expiresAt"]) || prev.expiresAt > request.time;
+
+      return prev.scope == "staff"
+        && notExpired
+        && next.role == prev.role
+        && next.scope == prev.scope
+        && next.createdBy == prev.createdBy
+        && next.createdByName == prev.createdByName
+        && next.createdByRole == prev.createdByRole
+        && next.createdAt == prev.createdAt
+        && next.expiresAt == prev.expiresAt
+        && (
+          (prev.usedBy == null
+            && !((prev.multiUse == true) || maxUses > 1)
+            && next.usedBy == me()
+            && next.usedAt != null)
+          ||
+          (((prev.multiUse == true) || maxUses > 1)
+            && usedCount < maxUses
+            && next.usedCount == usedCount + 1
+            && next.usedByLast == me()
+            && next.usedAtLast != null)
+        );
+    }
+
+    function canSelfLockPayout(walletId) {
+      return walletId == me()
+        && request.resource.data.pendingPayout > resource.data.pendingPayout
+        && request.resource.data.available < resource.data.available
+        && (resource.data.available - request.resource.data.available)
+          == (request.resource.data.pendingPayout - resource.data.pendingPayout)
+        && request.resource.data.pendingApproval == resource.data.pendingApproval
+        && request.resource.data.lifetimePaid == resource.data.lifetimePaid
+        && request.resource.data.lastPayDate == resource.data.lastPayDate
+        && request.resource.data.nextPayDate == resource.data.nextPayDate;
+    }
+
+    match /users/{userId} {
+      allow read: if signedIn() && (userId == me() || isStaff());
+
+      allow create: if signedIn()
+        && userId == me()
+        && request.resource.data.email is string
+        && request.resource.data.name is string
+        && request.resource.data.phone is string
+        && (
+          request.resource.data.role == "customer"
+          || isBootstrapSuperAdminCreate(userId)
+          || canCreateStaffFromInvite()
+        );
+
+      allow update: if signedIn() && (canSelfUpdateUser(userId) || canPrivilegedUpdateUser());
+      allow delete: if isOwner();
+    }
+
+    match /orders/{orderId} {
+      allow read: if signedIn() && (resource.data.customerId == me() || isStaff());
+
+      allow create: if signedIn()
+        && request.resource.data.customerId == me();
+
+      allow update: if signedIn() && (
+        isStaff()
+        || (
+          resource.data.customerId == me()
+          && request.resource.data.customerId == resource.data.customerId
+          && request.resource.data.workerAssigned == resource.data.workerAssigned
+          && request.resource.data.assignedWorkers == resource.data.assignedWorkers
+          && request.resource.data.status == resource.data.status
+          && request.resource.data.paymentStatus == resource.data.paymentStatus
+        )
+      );
+
+      allow delete: if isApprover();
+    }
+
+    match /reviews/{reviewId} {
+      allow read: if signedIn();
+      allow create: if signedIn();
+      allow update, delete: if isApprover();
+    }
+
+    match /referralCodes/{code} {
+      allow get: if true;
+      allow list: if isStaff();
+
+      allow create: if signedIn() && (
+        isApprover() || (isStaff() && request.resource.data.ownerUid == me())
+      );
+
+      allow update: if isApprover() || (
+        signedIn()
+        && request.resource.data.ownerUid == resource.data.ownerUid
+        && request.resource.data.role == resource.data.role
+        && request.resource.data.discountPercent == resource.data.discountPercent
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.timesUsed == resource.data.timesUsed + 1
+      );
+
+      allow delete: if isApprover();
+    }
+
+    match /inviteKeys/{key} {
+      allow get: if resource.data.scope == "staff";
+      allow list: if isStaff();
+
+      allow create: if signedIn()
+        && isStaff()
+        && request.resource.data.createdBy == me()
+        && request.resource.data.scope == "staff"
+        && canCreateInviteForRole(request.resource.data.role);
+
+      allow update: if signedIn() && canConsumeInviteKey();
+      allow delete: if signedIn() && (isApprover() || resource.data.createdBy == me());
+    }
+
+    match /payroll/{payrollId} {
+      allow read: if isStaff();
+      allow create: if isApprover();
+      allow update: if isStaff();
+      allow delete: if isOwner() || isSuperAdmin();
+    }
+
+    match /wallets/{walletId} {
+      allow read: if signedIn() && (walletId == me() || isApprover());
+      allow create: if signedIn() && (walletId == me() || isApprover());
+      allow update: if signedIn() && (isApprover() || canSelfLockPayout(walletId));
+      allow delete: if isOwner();
+    }
+
+    match /payoutRequests/{reqId} {
+      allow read: if signedIn() && (resource.data.uid == me() || isApprover());
+
+      allow create: if signedIn()
+        && isStaff()
+        && request.resource.data.uid == me()
+        && request.resource.data.status == "pending"
+        && request.resource.data.amount is number
+        && request.resource.data.amount > 0;
+
+      allow update: if signedIn()
+        && isApprover()
+        && resource.data.status == "pending"
+        && request.resource.data.uid == resource.data.uid
+        && request.resource.data.amount == resource.data.amount
+        && request.resource.data.method == resource.data.method
+        && request.resource.data.note == resource.data.note
+        && request.resource.data.userName == resource.data.userName
+        && request.resource.data.createdAt == resource.data.createdAt
+        && (
+          (request.resource.data.status == "paid" && request.resource.data.paidBy == me())
+          ||
+          (request.resource.data.status == "rejected" && request.resource.data.rejectedBy == me())
+        );
+
+      allow delete: if isOwner();
+    }
+
+    match /payrollRuns/{runId} {
+      allow read: if isStaff();
+      allow create: if signedIn() && isApprover() && request.resource.data.createdBy == me();
+      allow update: if signedIn() && isOwner();
+      allow delete: if isOwner();
+    }
+
+    match /assignmentRequests/{requestId} {
+      allow read: if signedIn() && (isApprover() || resource.data.requestedBy == me());
+
+      allow create: if signedIn()
+        && (isManager() || isApprover())
+        && request.resource.data.requestedBy == me()
+        && request.resource.data.status == "pending";
+
+      allow update: if signedIn() && isApprover() && resource.data.status == "pending";
+      allow delete: if signedIn() && (isApprover() || resource.data.requestedBy == me());
+    }
+
+    match /reports/{reportId} {
+      allow read: if signedIn() && (
+        resource.data.fromUid == me()
+        || resource.data.toRole == myRole()
+        || isOwner()
+      );
+
+      allow create: if signedIn()
+        && isStaff()
+        && request.resource.data.fromUid == me();
+
+      allow update: if signedIn() && (isApprover() || isOwner());
+      allow delete: if isOwner();
+    }
+
+    match /sampleRequests/{sampleId} {
+      allow read: if signedIn() && (isApprover() || isManager() || resource.data.workerId == me());
+      allow create: if signedIn() && isStaff() && request.resource.data.workerId == me();
+      allow update: if signedIn() && (isApprover() || isManager());
+      allow delete: if isApprover();
+    }
+
+    match /clients/{clientId} {
+      allow read: if isStaff();
+      allow create, update: if isStaff();
+      allow delete: if isApprover();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

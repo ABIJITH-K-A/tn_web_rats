@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Service — TN WEB RATS</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="Statics/styles.css" rel="stylesheet">
+  <!-- EmailJS — background only, never blocks UI -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <!-- Razorpay -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <style>
+  :root{--bg:#0B0C10;--dark:#1F2833;--gray:#C5C6C7;--cyan:#66FCF1;--teal:#45A29E;--mono:'Share Tech Mono',monospace;--sans:'Rajdhani',sans-serif;}
+  .neural-background-iframe{position:fixed;inset:0;width:100%;height:100%;border:none;z-index:0;pointer-events:none;transform:scale(1.3);}
+  body{background:var(--bg);font-family:var(--sans);color:var(--gray);overflow-x:hidden;}
+  .navbar{z-index:100!important;}
+  .main-content-wrapper{position:relative;z-index:2;overflow-y:auto;height:100vh;}
+
+  /* HERO */
+  .booking-hero{padding:140px 0 56px;text-align:center;background:linear-gradient(to bottom,rgba(11,12,16,.65),rgba(11,12,16,.2));}
+  .booking-hero .tag{display:inline-block;font-family:var(--mono);font-size:.68rem;letter-spacing:.28em;text-transform:uppercase;color:var(--cyan);border:1px solid rgba(102,252,241,.25);border-radius:20px;padding:6px 18px;margin-bottom:22px;}
+  .booking-hero h1{font-size:clamp(2rem,5vw,3.4rem);font-weight:700;color:var(--gray);letter-spacing:.06em;}
+  .booking-hero h1 span{color:var(--cyan);}
+  .booking-hero p{margin-top:12px;color:rgba(197,198,199,.5);font-family:var(--mono);font-size:.88rem;letter-spacing:.08em;}
+
+  /* PROGRESS */
+  .wizard-progress{display:flex;justify-content:center;align-items:flex-start;gap:0;margin:0 auto 44px;max-width:600px;}
+  .wizard-step{display:flex;flex-direction:column;align-items:center;gap:7px;flex:1;position:relative;}
+  .wizard-step::after{content:'';position:absolute;top:17px;left:50%;width:100%;height:2px;background:rgba(102,252,241,.13);z-index:0;transition:background .4s;}
+  .wizard-step:last-child::after{display:none;}
+  .wizard-step.done::after{background:rgba(69,162,158,.5);}
+  .step-dot{width:34px;height:34px;border-radius:50%;border:2px solid rgba(102,252,241,.2);background:var(--dark);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.72rem;color:rgba(197,198,199,.35);position:relative;z-index:1;transition:all .35s;}
+  .wizard-step.active .step-dot{border-color:var(--cyan);background:rgba(102,252,241,.1);color:var(--cyan);box-shadow:0 0 16px rgba(102,252,241,.28);}
+  .wizard-step.done .step-dot{border-color:var(--teal);background:rgba(69,162,158,.18);color:var(--teal);}
+  .step-label{font-family:var(--mono);font-size:.57rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(197,198,199,.3);transition:color .3s;}
+  .wizard-step.active .step-label{color:var(--cyan);}
+  .wizard-step.done .step-label{color:var(--teal);}
+
+  /* WIZARD */
+  .wizard-wrap{max-width:920px;margin:0 auto;padding:0 20px;}
+  .step-panel{display:none;}
+  .step-panel.active{display:block;animation:fadeUp .4s ease both;}
+  .step-title{font-family:var(--mono);font-size:.68rem;letter-spacing:.25em;text-transform:uppercase;color:var(--cyan);margin-bottom:26px;display:flex;align-items:center;gap:10px;}
+  .step-title i{font-size:1rem;}
+  .step-title::after{content:'';flex:1;height:1px;background:rgba(102,252,241,.12);}
+
+  /* SERVICE CARDS — Step 1 */
+  .svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px;}
+  @media(max-width:640px){.svc-grid{grid-template-columns:1fr;}}
+  .svc-card{position:relative;background:rgba(31,40,51,.88);border:2px solid rgba(102,252,241,.1);border-radius:16px;padding:30px 22px 24px;cursor:pointer;text-align:center;transition:all .3s;overflow:hidden;}
+  .svc-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(102,252,241,.06),transparent 60%);opacity:0;transition:opacity .3s;}
+  .svc-card:hover{border-color:rgba(102,252,241,.38);transform:translateY(-6px);box-shadow:0 18px 48px rgba(102,252,241,.1);}
+  .svc-card:hover::before{opacity:1;}
+  .svc-icon{width:60px;height:60px;border-radius:16px;background:linear-gradient(135deg,rgba(102,252,241,.15),rgba(69,162,158,.1));display:flex;align-items:center;justify-content:center;font-size:1.6rem;color:var(--cyan);margin:0 auto 16px;transition:box-shadow .3s;}
+  .svc-card:hover .svc-icon{box-shadow:0 0 24px rgba(102,252,241,.28);}
+  .svc-name{font-size:1.05rem;font-weight:700;color:var(--gray);letter-spacing:.05em;margin-bottom:6px;}
+  .svc-tagline{font-size:.76rem;color:rgba(197,198,199,.45);font-family:var(--mono);margin-bottom:18px;line-height:1.5;}
+  .svc-cta{display:inline-flex;align-items:center;gap:8px;padding:9px 20px;background:rgba(102,252,241,.08);border:1px solid rgba(102,252,241,.22);border-radius:8px;color:var(--cyan);font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;transition:all .25s;min-height:44px;cursor:pointer;}
+  .svc-card:hover .svc-cta{background:rgba(102,252,241,.15);}
+
+  /* PACKAGE CARDS — Step 2 */
+  .pkg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px;}
+  @media(max-width:720px){.pkg-grid{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;gap:14px;padding-bottom:12px;}.pkg-card{min-width:268px;scroll-snap-align:start;flex-shrink:0;}}
+  .pkg-card{position:relative;background:rgba(31,40,51,.88);border:2px solid rgba(102,252,241,.1);border-radius:16px;padding:24px 18px 22px;cursor:pointer;transition:all .3s;display:flex;flex-direction:column;}
+  .pkg-card:hover{border-color:rgba(102,252,241,.35);transform:translateY(-4px);box-shadow:0 14px 40px rgba(102,252,241,.1);}
+  .pkg-card.pkg-popular{border-color:var(--cyan);transform:scale(1.04);box-shadow:0 0 40px rgba(102,252,241,.18);z-index:2;}
+  .pkg-card.pkg-popular:hover{transform:scale(1.04) translateY(-4px);}
+  .pkg-badge{display:inline-block;font-family:var(--mono);font-size:.58rem;letter-spacing:.1em;padding:4px 12px;border-radius:20px;margin-bottom:12px;align-self:flex-start;background:rgba(102,252,241,.12);border:1px solid rgba(102,252,241,.3);color:var(--cyan);}
+  .pkg-urgency{font-family:var(--mono);font-size:.62rem;color:#ffa94d;margin-bottom:10px;}
+  .pkg-name{font-size:1.1rem;font-weight:700;color:var(--gray);margin-bottom:6px;}
+  .pkg-price{font-size:2rem;font-weight:800;color:var(--cyan);font-family:var(--mono);line-height:1;margin-bottom:4px;}
+  .pkg-delivery{font-family:var(--mono);font-size:.63rem;color:rgba(197,198,199,.42);letter-spacing:.1em;margin-bottom:14px;}
+  .pkg-features{list-style:none;padding:0;margin:0 0 18px;border-top:1px solid rgba(102,252,241,.08);padding-top:12px;flex:1;}
+  .pkg-features li{font-size:.8rem;color:rgba(197,198,199,.55);padding:3px 0;display:flex;align-items:flex-start;gap:8px;}
+  .pkg-features li i{color:var(--teal);font-size:.58rem;margin-top:4px;flex-shrink:0;}
+  .pkg-cta{display:flex;align-items:center;justify-content:center;text-align:center;padding:12px;background:rgba(102,252,241,.08);border:1px solid rgba(102,252,241,.22);border-radius:8px;color:var(--cyan);font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;transition:all .25s;min-height:44px;cursor:pointer;}
+  .pkg-card.pkg-popular .pkg-cta{background:rgba(102,252,241,.15);}
+  .pkg-cta:hover{background:rgba(102,252,241,.22);}
+  .pkg-back{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(197,198,199,.45);cursor:pointer;margin-bottom:22px;transition:color .25s;border:none;background:none;padding:0;min-height:44px;}
+  .pkg-back:hover{color:var(--cyan);}
+
+  /* FORM */
+  .form-section{background:rgba(31,40,51,.84);backdrop-filter:blur(12px);border:1px solid rgba(102,252,241,.1);border-radius:16px;padding:34px 38px;margin-bottom:22px;}
+  @media(max-width:576px){.form-section{padding:22px 18px;}}
+  .field-group{margin-bottom:20px;}
+  .field-label{display:block;font-family:var(--mono);font-size:.63rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(197,198,199,.42);margin-bottom:7px;transition:color .3s;}
+  .field-group:focus-within .field-label{color:var(--cyan);}
+  .field-wrap{position:relative;}
+  .field-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:rgba(102,252,241,.28);font-size:.85rem;pointer-events:none;transition:color .3s;}
+  .field-wrap.ta-wrap .field-icon{top:15px;transform:none;}
+  .field-group:focus-within .field-icon{color:var(--cyan);}
+  .f-ctrl{width:100%;padding:13px 14px 13px 40px;background:rgba(11,12,16,.72);border:1px solid rgba(102,252,241,.12);border-radius:10px;color:var(--gray);font-family:var(--sans);font-size:.94rem;font-weight:500;transition:border-color .3s,box-shadow .3s;outline:none;-webkit-appearance:none;}
+  .f-ctrl::placeholder{color:rgba(197,198,199,.18);}
+  .f-ctrl:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(102,252,241,.08);background:rgba(11,12,16,.9);}
+  .f-ctrl.is-invalid{border-color:#ff4d6d;}
+  textarea.f-ctrl{resize:vertical;min-height:108px;padding-top:13px;}
+  select.f-ctrl{cursor:pointer;}
+  select.f-ctrl option{background:var(--dark);}
+  .field-err{display:none;font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;color:#ff4d6d;margin-top:5px;}
+  .field-err.show{display:block;}
+
+  /* REVIEW CARD */
+  .review-card{background:rgba(31,40,51,.86);border:1px solid rgba(102,252,241,.11);border-radius:16px;overflow:hidden;margin-bottom:18px;}
+  .review-header{padding:16px 26px;background:rgba(102,252,241,.04);border-bottom:1px solid rgba(102,252,241,.09);display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--cyan);}
+  .review-body{padding:22px 26px;}
+  .review-row{display:flex;justify-content:space-between;align-items:flex-start;padding:9px 0;border-bottom:1px solid rgba(102,252,241,.055);gap:18px;}
+  .review-row:last-child{border-bottom:none;padding-bottom:0;}
+  .review-key{font-family:var(--mono);font-size:.63rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(197,198,199,.38);flex-shrink:0;min-width:110px;}
+  .review-val{font-size:.88rem;font-weight:600;color:var(--gray);text-align:right;}
+  .review-val.hl{color:var(--cyan);}
+  .review-val.discount{color:#66fcb3;}
+  @media(max-width:600px){.review-row{flex-direction:column;gap:2px;}.review-val{text-align:left;}}
+
+  /* CONSENT */
+  .consent-row{display:flex;align-items:flex-start;gap:12px;padding:15px 18px;background:rgba(11,12,16,.5);border:1px solid rgba(102,252,241,.1);border-radius:10px;margin-bottom:22px;cursor:pointer;}
+  .consent-box{width:20px;height:20px;border:2px solid rgba(102,252,241,.28);border-radius:5px;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:all .25s;}
+  .consent-row.checked .consent-box{background:var(--cyan);border-color:var(--cyan);}
+  .consent-box i{color:var(--bg);font-size:.63rem;display:none;}
+  .consent-row.checked .consent-box i{display:block;}
+  .consent-text{font-size:.82rem;color:rgba(197,198,199,.52);line-height:1.55;}
+
+  /* BUTTONS */
+  .wizard-nav{display:flex;justify-content:space-between;align-items:center;gap:14px;padding-top:6px;}
+  .btn-prev{display:flex;align-items:center;gap:8px;padding:12px 22px;background:transparent;border:1px solid rgba(102,252,241,.18);border-radius:10px;color:rgba(197,198,199,.5);font-family:var(--sans);font-size:.88rem;font-weight:600;letter-spacing:.04em;cursor:pointer;transition:all .25s;min-height:44px;}
+  .btn-prev:hover{border-color:rgba(102,252,241,.42);color:var(--gray);}
+  .btn-next{display:flex;align-items:center;gap:9px;padding:14px 30px;background:linear-gradient(90deg,var(--teal),var(--cyan));border:none;border-radius:10px;color:var(--bg);font-family:var(--sans);font-size:.97rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;position:relative;overflow:hidden;transition:transform .2s,box-shadow .3s;min-height:44px;}
+  .btn-next::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent);transform:translateX(-100%);transition:transform .5s;}
+  .btn-next:hover{transform:translateY(-2px);box-shadow:0 8px 26px rgba(102,252,241,.32);}
+  .btn-next:hover::before{transform:translateX(100%);}
+  .btn-next:disabled{opacity:.4;pointer-events:none;}
+  .btn-next .btn-text{display:flex;align-items:center;gap:8px;}
+  .btn-next .btn-loader{display:none;align-items:center;gap:8px;}
+  .btn-next.loading .btn-text{display:none;}
+  .btn-next.loading .btn-loader{display:flex;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .spin{animation:spin .7s linear infinite;}
+  .btn-wa{display:flex;align-items:center;gap:10px;padding:13px 26px;background:rgba(37,211,102,.1);border:1px solid rgba(37,211,102,.32);border-radius:10px;color:#25D366;font-family:var(--sans);font-size:.88rem;font-weight:600;cursor:pointer;text-decoration:none;transition:all .25s;min-height:44px;}
+  .btn-wa:hover{background:rgba(37,211,102,.18);border-color:rgba(37,211,102,.58);color:#25D366;}
+  #paymentBtns .btns-right{display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-end;}
+  @media(max-width:767px){#paymentBtns{flex-direction:column;}#paymentBtns .btns-right{flex-direction:column;}#paymentBtns .btns-right .btn-wa,#paymentBtns .btns-right .btn-next{width:100%;justify-content:center;}}
+
+  /* AUTH MODAL */
+  .auth-overlay{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(6px);}
+  .auth-overlay.open{display:flex;}
+  .auth-box{width:100%;max-width:460px;background:rgba(11,14,22,.97);border:1px solid rgba(102,252,241,.18);border-radius:20px;padding:40px 38px;max-height:90vh;overflow-y:auto;position:relative;animation:fadeUp .3s ease;}
+  @media(max-width:500px){.auth-box{padding:28px 22px;}}
+  .auth-close{position:absolute;top:14px;right:16px;background:none;border:none;color:rgba(197,198,199,.4);font-size:1.3rem;cursor:pointer;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:color .2s;}
+  .auth-close:hover{color:var(--cyan);}
+  .auth-title{font-family:var(--mono);font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--cyan);margin-bottom:6px;}
+  .auth-subtitle{font-size:.82rem;color:rgba(197,198,199,.4);margin-bottom:24px;}
+  .auth-pane{display:none;}
+  .auth-pane.active{display:block;}
+  .auth-switch{font-family:var(--mono);font-size:.65rem;letter-spacing:.08em;text-align:center;color:rgba(197,198,199,.38);margin-top:16px;}
+  .auth-switch a{color:var(--cyan);cursor:pointer;text-decoration:none;}
+  .auth-switch a:hover{text-decoration:underline;}
+  .ref-feedback{font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;margin-top:5px;min-height:16px;transition:color .2s;}
+  .ref-feedback.valid{color:var(--cyan);}
+  .ref-feedback.invalid{color:#ff4d6d;}
+  .ref-feedback.checking{color:rgba(197,198,199,.38);}
+  .auth-err{font-family:var(--mono);font-size:.63rem;letter-spacing:.08em;color:#ff4d6d;margin-bottom:14px;min-height:16px;}
+
+  /* REVIEW MODAL */
+  .review-overlay{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(6px);}
+  .review-overlay.open{display:flex;}
+  .review-box{width:100%;max-width:420px;background:rgba(11,14,22,.97);border:1px solid rgba(102,252,241,.18);border-radius:20px;padding:38px 34px;text-align:center;animation:fadeUp .3s ease;}
+  .review-stars{display:flex;justify-content:center;gap:10px;margin:18px 0;}
+  .star-btn{font-size:2.2rem;color:rgba(102,252,241,.22);cursor:pointer;transition:color .2s;background:none;border:none;line-height:1;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;}
+  .star-btn.lit{color:var(--cyan);}
+  .star-btn:hover{color:rgba(102,252,241,.7);}
+
+  /* MY ORDERS panel (customer, logged in) */
+  .my-orders-card{background:rgba(31,40,51,.82);border:1px solid rgba(102,252,241,.08);border-radius:14px;overflow:hidden;margin-bottom:18px;}
+  .my-orders-header{padding:14px 22px;background:rgba(102,252,241,.04);border-bottom:1px solid rgba(102,252,241,.07);font-family:var(--mono);font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;color:var(--cyan);display:flex;align-items:center;gap:10px;}
+  .my-orders-body{padding:18px 22px;overflow-x:auto;}
+  .my-orders-table{width:100%;border-collapse:collapse;font-size:.84rem;min-width:460px;}
+  .my-orders-table th{font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(197,198,199,.35);padding:8px 12px;border-bottom:1px solid rgba(102,252,241,.08);text-align:left;}
+  .my-orders-table td{padding:10px 12px;border-bottom:1px solid rgba(102,252,241,.05);vertical-align:middle;}
+  .my-orders-table tr:last-child td{border-bottom:none;}
+  .status-pill{display:inline-block;font-family:var(--mono);font-size:.58rem;padding:3px 9px;border-radius:20px;text-transform:uppercase;}
+  .pill-pending{background:rgba(255,193,7,.1);color:#ffc107;border:1px solid rgba(255,193,7,.22);}
+  .pill-in_progress{background:rgba(13,202,240,.1);color:#0dcaf0;border:1px solid rgba(13,202,240,.22);}
+  .pill-complete{background:rgba(102,252,241,.1);color:var(--cyan);border:1px solid rgba(102,252,241,.22);}
+  .pill-cancelled{background:rgba(220,53,69,.08);color:#ff6b7a;border:1px solid rgba(220,53,69,.18);}
+
+  /* SUCCESS */
+  .success-overlay{display:none;text-align:center;padding:60px 20px;}
+  .success-overlay.show{display:block;animation:fadeUp .6s ease both;}
+  .success-ring{width:88px;height:88px;border-radius:50%;border:2px solid var(--cyan);display:flex;align-items:center;justify-content:center;margin:0 auto 26px;font-size:2rem;color:var(--cyan);animation:pglow 2s infinite;}
+  .success-overlay h2{color:var(--cyan);font-size:1.9rem;letter-spacing:.1em;margin-bottom:12px;}
+  .success-overlay p{color:rgba(197,198,199,.52);font-family:var(--mono);font-size:.83rem;line-height:1.85;}
+  .success-ref{display:inline-block;margin-top:18px;padding:9px 22px;background:rgba(102,252,241,.07);border:1px solid rgba(102,252,241,.2);border-radius:8px;font-family:var(--mono);font-size:.78rem;color:var(--cyan);letter-spacing:.14em;}
+
+  /* TOAST */
+  .tnwr-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(120%);background:rgba(15,17,23,.97);border:1px solid rgba(102,252,241,.18);color:var(--gray);padding:11px 24px;border-radius:100px;font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;z-index:9999;transition:transform .35s ease;pointer-events:none;white-space:nowrap;}
+  .tnwr-toast.show{transform:translateX(-50%) translateY(0);}
+  .tnwr-toast.ok{border-color:rgba(102,252,241,.5);color:var(--cyan);}
+  .tnwr-toast.err{border-color:rgba(220,53,69,.5);color:#ff6b7a;}
+
+  .footer{background:rgba(11,12,16,.95);border-top:1px solid rgba(102,252,241,.07);}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-14px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes pglow{0%,100%{box-shadow:0 0 18px rgba(102,252,241,.22);}50%{box-shadow:0 0 38px rgba(102,252,241,.52);}}
+  </style>
+</head>
+<body>
+
+<iframe src="neural-bg.html" class="neural-background-iframe"></iframe>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" href="index.html">
+      <img src="RATTY.png" alt="TN WEB RATS Logo" class="navbar-logo me-2" onerror="this.style.display='none'">
+      <span class="brand-text">TN WEB RATS</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="services.html">Services</a></li>
+        <li class="nav-item"><a class="nav-link" href="projects.html">Projects</a></li>
+        <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+        <li class="nav-item"><a class="nav-link active" href="book.html">Book Service</a></li>
+        <li class="nav-item"><a class="nav-link" href="help.html">Help</a></li>
+        <!-- Guest -->
+        <li class="nav-item nav-guest"><a class="nav-link" href="#" onclick="openAuth('login');return false;">Sign In</a></li>
+        <li class="nav-item nav-guest"><a class="nav-link" href="signup.html">Sign Up</a></li>
+        <!-- Authed -->
+        <li class="nav-item nav-authed d-none">
+          <a class="nav-link" href="profile.html" style="color:var(--cyan)">
+            <span class="nav-username"></span>
+          </a>
+        </li>
+        <li class="nav-item nav-authed d-none">
+          <a class="nav-link" href="#" onclick="showMyOrders();return false;" style="font-size:.82rem;opacity:.6">Orders</a>
+        </li>
+        <li class="nav-item nav-authed d-none"><a class="nav-link" href="#" onclick="doLogout();return false;">Logout</a></li>
+        <li class="nav-item nav-admin d-none"><a class="nav-link" href="admin-dashboard.html" style="color:var(--teal)">Admin</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="main-content-wrapper">
+
+<!-- HERO -->
+<section class="booking-hero">
+  <div class="container">
+    <div class="tag" style="animation:fadeDown .6s ease both"><i class="fas fa-bolt me-2"></i>Fast · Affordable · Student-Friendly</div>
+    <h1 style="animation:fadeDown .6s .1s ease both">Book Your <span>Project</span></h1>
+    <p style="animation:fadeDown .6s .2s ease both">Choose a service · pick your plan · done in minutes</p>
+  </div>
+</section>
+
+<section class="py-4 pb-5">
+<div class="container">
+
+<!-- PROGRESS -->
+<div class="wizard-progress">
+  <div class="wizard-step active" id="ws1"><div class="step-dot">01</div><div class="step-label">Service</div></div>
+  <div class="wizard-step"        id="ws2"><div class="step-dot">02</div><div class="step-label">Package</div></div>
+  <div class="wizard-step"        id="ws3"><div class="step-dot">03</div><div class="step-label">Details</div></div>
+  <div class="wizard-step"        id="ws4"><div class="step-dot">04</div><div class="step-label">Confirm</div></div>
+</div>
+
+<div class="wizard-wrap">
+
+<!-- ═══════════ STEP 1 — SERVICE ═══════════ -->
+<div class="step-panel active" id="step1">
+  <div class="step-title"><i class="fas fa-layer-group"></i> Choose your service</div>
+  <div class="svc-grid">
+    <div class="svc-card" data-svc="ppt">
+      <div class="svc-icon"><i class="fas fa-file-powerpoint"></i></div>
+      <div class="svc-name">PowerPoint Presentations</div>
+      <div class="svc-tagline">Slides that win pitches &amp; pass exams</div>
+      <div class="svc-cta">See Packages <i class="fas fa-arrow-right"></i></div>
+    </div>
+    <div class="svc-card" data-svc="poster">
+      <div class="svc-icon"><i class="fas fa-image"></i></div>
+      <div class="svc-name">Posters &amp; Graphics</div>
+      <div class="svc-tagline">Designs that get noticed everywhere</div>
+      <div class="svc-cta">See Packages <i class="fas fa-arrow-right"></i></div>
+    </div>
+    <div class="svc-card" data-svc="website">
+      <div class="svc-icon"><i class="fas fa-laptop-code"></i></div>
+      <div class="svc-name">Website Development</div>
+      <div class="svc-tagline">Websites that work while you sleep</div>
+      <div class="svc-cta">See Packages <i class="fas fa-arrow-right"></i></div>
+    </div>
+  </div>
+  <div style="text-align:center;padding-top:10px;">
+    <p style="font-family:var(--mono);font-size:.62rem;color:rgba(197,198,199,.28);letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px;">or skip the form</p>
+    <a href="https://wa.me/918300920680?text=Hi TN WEB RATS! I'd like to discuss a project." class="btn-wa d-inline-flex" target="_blank" rel="noopener">
+      <i class="fab fa-whatsapp"></i> Message us directly on WhatsApp
+    </a>
+  </div>
+  <!-- MY ORDERS (shown when logged in, customer) -->
+  <div id="myOrdersSection" style="display:none;margin-top:40px;">
+    <div class="step-title" style="margin-top:10px"><i class="fas fa-history"></i> My Orders</div>
+    <div class="my-orders-card">
+      <div class="my-orders-header"><i class="fas fa-list"></i> Your Order History</div>
+      <div class="my-orders-body" id="myOrdersList"><div style="text-align:center;padding:24px;font-family:var(--mono);font-size:.68rem;color:rgba(197,198,199,.28)">loading…</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ STEP 2 — PACKAGES ═══════════ -->
+<div class="step-panel" id="step2">
+  <button class="pkg-back" id="pkgBack"><i class="fas fa-arrow-left"></i> Back to services</button>
+  <div class="step-title"><i class="fas fa-tag"></i> <span id="pkgStepLabel">Choose your plan</span></div>
+  <div class="pkg-grid" id="pkgGrid"></div>
+</div>
+
+<!-- ═══════════ STEP 3 — PROJECT DETAILS ═══════════ -->
+<div class="step-panel" id="step3">
+  <div class="step-title"><i class="fas fa-pencil-alt"></i> Project details</div>
+  <p style="font-family:var(--mono);font-size:.63rem;letter-spacing:.12em;color:rgba(197,198,199,.35);margin-bottom:20px;text-transform:uppercase;" id="step3Label"></p>
+
+  <div class="form-section">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="field-group">
+          <label class="field-label">Full name *</label>
+          <div class="field-wrap"><i class="fas fa-user field-icon"></i>
+            <input type="text" id="fName" class="f-ctrl" placeholder="Aarav Kumar">
+          </div>
+          <div class="field-err" id="errName">name is required</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="field-group">
+          <label class="field-label">Email *</label>
+          <div class="field-wrap"><i class="fas fa-envelope field-icon"></i>
+            <input type="email" id="fEmail" class="f-ctrl" placeholder="you@example.com">
+          </div>
+          <div class="field-err" id="errEmail">enter a valid email</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="field-group">
+          <label class="field-label">WhatsApp / Phone *</label>
+          <div class="field-wrap"><i class="fab fa-whatsapp field-icon"></i>
+            <input type="tel" id="fPhone" class="f-ctrl" placeholder="+91 98765 43210">
+          </div>
+          <div class="field-err" id="errPhone">enter a valid 10–15 digit number</div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="field-group">
+          <label class="field-label">Project name *</label>
+          <div class="field-wrap"><i class="fas fa-folder field-icon"></i>
+            <input type="text" id="fProjectName" class="f-ctrl" placeholder="e.g. Final Year EV Presentation">
+          </div>
+          <div class="field-err" id="errProjectName">project name is required</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="field-group">
+          <label class="field-label">Your deadline *</label>
+          <div class="field-wrap"><i class="fas fa-calendar field-icon"></i>
+            <input type="date" id="fDeadline" class="f-ctrl">
+          </div>
+          <div class="field-err" id="errDeadline">deadline cannot be in the past</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="field-group">
+          <label class="field-label">Drive link <span style="opacity:.38">(optional)</span></label>
+          <div class="field-wrap"><i class="fab fa-google-drive field-icon"></i>
+            <input type="url" id="fDriveLink" class="f-ctrl" placeholder="Reference files">
+          </div>
+        </div>
+      </div>
+      <!-- Service-specific extra fields injected here -->
+      <div id="extraFields" class="col-12" style="display:none">
+        <div class="row g-4" id="extraFieldsInner"></div>
+      </div>
+      <div class="col-12">
+        <div class="field-group">
+          <label class="field-label">Special instructions *</label>
+          <div class="field-wrap ta-wrap"><i class="fas fa-align-left field-icon"></i>
+            <textarea id="fInstructions" class="f-ctrl" rows="4" style="padding-left:42px" placeholder="Describe your project — style, theme, audience, any must-haves…"></textarea>
+          </div>
+          <div class="field-err" id="errInstructions">please describe your project (min 20 chars)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wizard-nav">
+    <button class="btn-prev" id="prev3"><i class="fas fa-arrow-left"></i> Back</button>
+    <button class="btn-next" id="nextStep3">
+      <span class="btn-text">Review Order <i class="fas fa-arrow-right"></i></span>
+      <span class="btn-loader"><i class="fas fa-circle-notch spin"></i> Checking…</span>
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════ STEP 4 — CONFIRM ═══════════ -->
+<div class="step-panel" id="step4">
+  <div class="step-title"><i class="fas fa-check-double"></i> Review &amp; confirm</div>
+  <div class="review-card">
+    <div class="review-header"><i class="fas fa-layer-group"></i> Order Summary</div>
+    <div class="review-body" id="revSummary"></div>
+  </div>
+  <div class="review-card">
+    <div class="review-header"><i class="fas fa-pencil-alt"></i> Project Details</div>
+    <div class="review-body" id="revProject"></div>
+  </div>
+  <div class="review-card">
+    <div class="review-header"><i class="fas fa-user"></i> Contact Info</div>
+    <div class="review-body" id="revContact"></div>
+  </div>
+
+  <div class="consent-row" id="consentRow">
+    <div class="consent-box"><i class="fas fa-check"></i></div>
+    <div class="consent-text">I agree that TN WEB RATS may contact me on the details provided. I understand that 50% advance payment is required before work begins.</div>
+  </div>
+  <div class="field-err" id="errConsent" style="margin-top:-14px;margin-bottom:18px;">// please tick to continue</div>
+
+  <div class="wizard-nav" id="paymentBtns">
+    <button class="btn-prev" id="prev4"><i class="fas fa-arrow-left"></i> Edit</button>
+    <div class="btns-right">
+      <button class="btn-wa" id="btnWa" onclick="bookViaWhatsapp()">
+        <i class="fab fa-whatsapp"></i> Book via WhatsApp
+      </button>
+      <button class="btn-next" id="btnPay" onclick="initiatePayment()">
+        <span class="btn-text"><i class="fas fa-lock me-1"></i> Pay <span id="btnPayAmt"></span> Now</span>
+        <span class="btn-loader"><i class="fas fa-circle-notch spin"></i> Processing…</span>
+      </button>
+    </div>
+  </div>
+  <p style="font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;color:rgba(197,198,199,.28);text-align:center;margin-top:12px;">
+    <i class="fas fa-shield-alt me-1"></i> Secure payment via Razorpay · or book on WhatsApp for cash/UPI
+  </p>
+</div>
+
+<!-- SUCCESS -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-ring"><i class="fas fa-paper-plane"></i></div>
+  <h2>Order Confirmed!</h2>
+  <p>Your booking is locked in. We'll get started right away!<br>Questions? <strong style="color:var(--cyan)">+91 8300920680</strong></p>
+  <div class="success-ref" id="successRef">ORDER ID: —</div>
+  <br><br>
+  <a href="index.html" style="color:var(--cyan);font-family:var(--mono);font-size:.72rem;letter-spacing:.15em;text-decoration:none;text-transform:uppercase;">← Back to Home</a>
+</div>
+
+</div><!-- /wizard-wrap -->
+</div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer py-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-4 mb-4">
+        <h5 style="color:#66FCF1;"><i class="fas fa-mouse me-2"></i>TN WEB RATS</h5>
+        <p>Fast, creative designs for students &amp; businesses in Tamil Nadu.</p>
+      </div>
+      <div class="col-lg-4 mb-4">
+        <h6 style="color:#66FCF1;">Contact</h6>
+        <p style="margin:0"><i class="fas fa-envelope me-2"></i>unofficials113@gmail.com</p>
+        <p style="margin:0"><i class="fab fa-whatsapp me-2"></i>+91 8300920680</p>
+        <p><i class="fab fa-instagram me-2"></i>@tn_web_rats</p>
+      </div>
+      <div class="col-lg-4 mb-4">
+        <h6 style="color:#66FCF1;">Quick Links</h6>
+        <ul class="list-unstyled">
+          <li><a href="services.html" style="color:#C5C6C7">Services &amp; Pricing</a></li>
+          <li><a href="projects.html" style="color:#C5C6C7">Portfolio</a></li>
+          <li><a href="help.html"     style="color:#C5C6C7">Help &amp; FAQ</a></li>
+          <li><a href="about.html"    style="color:#C5C6C7">About Us</a></li>
+        </ul>
+      </div>
+    </div>
+    <hr style="border-color:rgba(102,252,241,.08)">
+    <div class="text-center">© 2026 TN Web Rats. All rights reserved. Made with ❤️ in Tamil Nadu.</div>
+  </div>
+</footer>
+
+</div><!-- /main-content-wrapper -->
+
+<!-- AUTH MODAL -->
+<div class="auth-overlay" id="authOverlay">
+  <div class="auth-box">
+    <button class="auth-close" onclick="closeAuth()" aria-label="Close">&times;</button>
+    <!-- LOGIN -->
+    <div class="auth-pane active" id="authLogin">
+      <div class="auth-title"><i class="fas fa-sign-in-alt me-2"></i>Sign In</div>
+      <div class="auth-subtitle">Sign in to continue with your booking</div>
+      <div class="field-group">
+        <label class="field-label">Email</label>
+        <div class="field-wrap"><i class="fas fa-envelope field-icon"></i>
+          <input type="email" id="loginEmail" class="f-ctrl" placeholder="you@example.com" autocomplete="email">
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Password</label>
+        <div class="field-wrap"><i class="fas fa-lock field-icon"></i>
+          <input type="password" id="loginPassword" class="f-ctrl" placeholder="Your password" autocomplete="current-password">
+        </div>
+      </div>
+      <div class="auth-err" id="loginErr"></div>
+      <button class="btn-next w-100" style="justify-content:center" id="btnLogin">
+        <span class="btn-text">Sign In</span>
+        <span class="btn-loader"><i class="fas fa-circle-notch spin"></i> Signing in…</span>
+      </button>
+      <div class="auth-switch">No account? <a onclick="switchAuth('register')">Create one free</a></div>
+    </div>
+    <!-- REGISTER -->
+    <div class="auth-pane" id="authRegister">
+      <div class="auth-title"><i class="fas fa-user-plus me-2"></i>Create Account</div>
+      <div class="auth-subtitle">Join TN WEB RATS to track your orders</div>
+      <div class="row g-3">
+        <div class="col-12">
+          <div class="field-group" style="margin-bottom:0">
+            <label class="field-label">Full name *</label>
+            <div class="field-wrap"><i class="fas fa-user field-icon"></i>
+              <input type="text" id="regName" class="f-ctrl" placeholder="Aarav Kumar" autocomplete="name">
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="field-group" style="margin-bottom:0">
+            <label class="field-label">Email *</label>
+            <div class="field-wrap"><i class="fas fa-envelope field-icon"></i>
+              <input type="email" id="regEmail" class="f-ctrl" placeholder="you@example.com" autocomplete="email">
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="field-group" style="margin-bottom:0">
+            <label class="field-label">Phone *</label>
+            <div class="field-wrap"><i class="fab fa-whatsapp field-icon"></i>
+              <input type="tel" id="regPhone" class="f-ctrl" placeholder="+91 98765 43210">
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="field-group" style="margin-bottom:0">
+            <label class="field-label">Password *</label>
+            <div class="field-wrap"><i class="fas fa-lock field-icon"></i>
+              <input type="password" id="regPassword" class="f-ctrl" placeholder="Min 6 characters" autocomplete="new-password">
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="field-group" style="margin-bottom:0">
+            <label class="field-label">Confirm Password *</label>
+            <div class="field-wrap"><i class="fas fa-lock field-icon"></i>
+              <input type="password" id="regConfirm" class="f-ctrl" placeholder="Repeat password" autocomplete="new-password">
+            </div>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="field-group" style="margin-bottom:0">
+            <label class="field-label">Referral Code <span style="opacity:.38">(optional)</span></label>
+            <div class="field-wrap"><i class="fas fa-ticket-alt field-icon"></i>
+              <input type="text" id="regReferral" class="f-ctrl" placeholder="TNWR-XXX-XXXX" style="text-transform:uppercase" autocomplete="off">
+            </div>
+            <div class="ref-feedback" id="refFeedback"></div>
+          </div>
+        </div>
+      </div>
+      <div class="auth-err" id="regErr" style="margin-top:12px"></div>
+      <button class="btn-next w-100 mt-3" style="justify-content:center" id="btnRegister">
+        <span class="btn-text">Create Account</span>
+        <span class="btn-loader"><i class="fas fa-circle-notch spin"></i> Creating…</span>
+      </button>
+      <div class="auth-switch">Have an account? <a onclick="switchAuth('login')">Sign in</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- REVIEW PROMPT MODAL -->
+<div class="review-overlay" id="reviewOverlay">
+  <div class="review-box">
+    <div class="auth-title"><i class="fas fa-star me-2"></i>Rate your order</div>
+    <div class="auth-subtitle" id="reviewOrderLabel">Tell us how we did!</div>
+    <div class="review-stars" id="reviewStars">
+      <button class="star-btn" data-n="1">☆</button>
+      <button class="star-btn" data-n="2">☆</button>
+      <button class="star-btn" data-n="3">☆</button>
+      <button class="star-btn" data-n="4">☆</button>
+      <button class="star-btn" data-n="5">☆</button>
+    </div>
+    <div class="field-group" style="text-align:left">
+      <div class="field-wrap ta-wrap"><i class="fas fa-comment field-icon"></i>
+        <textarea id="reviewComment" class="f-ctrl" rows="3" style="padding-left:42px" maxlength="500" placeholder="Tell us about your experience… (optional)"></textarea>
+      </div>
+    </div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <button class="btn-next" id="btnSubmitReview" style="min-width:160px;justify-content:center">
+        <span class="btn-text">Submit Review</span>
+        <span class="btn-loader"><i class="fas fa-circle-notch spin"></i> Saving…</span>
+      </button>
+      <button class="btn-prev" onclick="document.getElementById('reviewOverlay').classList.remove('open')">Later</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="tnwr-toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="Statics/script.js"></script>
+
+<script type="module">
+/* ═══════════════════════════════════════════════════════
+   CONFIG — replace placeholders before going live
+═══════════════════════════════════════════════════════ */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBf1c5bC31M0m5PVX67QsyeiOIS-0acRkI",
+    authDomain: "unofficial-webrats.firebaseapp.com",
+    projectId: "unofficial-webrats",
+    storageBucket: "unofficial-webrats.firebasestorage.app",
+    messagingSenderId: "378552539429",
+    appId: "1:378552539429:web:e4cf876e5b65c9fd4ee2cc",
+    measurementId: "G-JYSYHTJKD7"
+};
+const RAZORPAY_KEY  = "YOUR_RAZORPAY_KEY_ID";   // rzp_live_xxx or rzp_test_xxx
+const WA_NUM        = "918300920680";
+const OWNER_EMAIL   = "unofficials113@gmail.com";
+const EJS = {
+  publicKey:  "YOUR_EMAILJS_PUBLIC_KEY",
+  serviceId:  "YOUR_EMAILJS_SERVICE_ID",
+  ownerTpl:   "template_owner_order",
+  customerTpl:"template_customer_confirm"
+};
+
+/* ── Firebase ─────────────────────────────────────── */
+const { initializeApp }                    = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+const { getAuth, createUserWithEmailAndPassword,
+        signInWithEmailAndPassword, signOut,
+        onAuthStateChanged }               = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
+const { getFirestore, doc, getDoc, setDoc,
+        updateDoc, addDoc, getDocs,
+        collection, query, where,
+        orderBy, serverTimestamp }         = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+
+const app  = initializeApp(FIREBASE_CONFIG);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+if (typeof emailjs !== "undefined") emailjs.init(EJS.publicKey);
+
+/* ── Referral tiers ───────────────────────────────── */
+const TIERS = {
+  worker:{code:"WRK",discount:5},manager:{code:"MGR",discount:10},
+  admin:{code:"ADM",discount:15},superadmin:{code:"SAD",discount:20}
+};
+
+/* ══════════════════════════════════════════════════
+   PACKAGE DATA — most expensive first, marketing rules
+══════════════════════════════════════════════════ */
+const SERVICES = {
+  ppt:{
+    name:"PowerPoint Presentations",
+    packages:[
+      {id:"elite",label:"Elite",price:499,delivery:"24 hrs",
+       badge:"⭐ BEST VALUE",popular:false,urgency:"⚡ Only 3 slots left!",
+       features:["20 custom-branded slides","Full animations & transitions","Coaching notes","2 revisions","Source file (PPTX)","24-hour delivery"]},
+      {id:"pro",label:"Pro",price:299,delivery:"48 hrs",
+       badge:"🔥 MOST POPULAR",popular:true,urgency:null,
+       features:["12 slides with template","Smooth animations","1 revision","Source file (PPTX)","48-hour delivery"]},
+      {id:"starter",label:"Starter",price:149,delivery:"72 hrs",
+       badge:null,popular:false,urgency:null,
+       features:["6 slides clean template","Professional layout","72-hour delivery"]}
+    ]
+  },
+  poster:{
+    name:"Posters & Graphics",
+    packages:[
+      {id:"brand_kit",label:"Brand Kit",price:799,delivery:"48 hrs",
+       badge:"⭐ BEST VALUE",popular:false,urgency:"⚡ Only 3 slots left!",
+       features:["5 custom poster designs","Logo included","Social media kit (8 sizes)","Brand colour palette","3 revisions","Source files","Commercial licence"]},
+      {id:"campaign",label:"Campaign",price:399,delivery:"36 hrs",
+       badge:"🔥 MOST POPULAR",popular:true,urgency:null,
+       features:["3 poster designs","Social media sizes","2 revisions","PNG + PDF delivery"]},
+      {id:"single",label:"Single",price:149,delivery:"72 hrs",
+       badge:null,popular:false,urgency:null,
+       features:["1 poster design","1 revision","PNG + PDF delivery"]}
+    ]
+  },
+  website:{
+    name:"Website Development",
+    packages:[
+      {id:"business_pro",label:"Business Pro",price:4999,delivery:"7 days",
+       badge:"⭐ BEST VALUE",popular:false,urgency:"⚡ Only 3 slots left!",
+       features:["8-page custom design","Fully responsive","Contact forms","Google Analytics","On-page SEO","3 revisions","1-month support","Domain guidance"]},
+      {id:"standard",label:"Standard",price:2499,delivery:"5 days",
+       badge:"🔥 MOST POPULAR",popular:true,urgency:null,
+       features:["4-page template","Fully responsive","Contact form","2 revisions","2-week support"]},
+      {id:"landing",label:"Landing Page",price:999,delivery:"3 days",
+       badge:null,popular:false,urgency:null,
+       features:["Single landing page","Fully responsive","Contact form","1 revision"]}
+    ]
+  }
+};
+
+/* ── State ────────────────────────────────────────── */
+let STATE   = {step:1,svcId:null,pkg:null,form:{},discount:0,discountPct:0,refCode:null};
+let CU      = null;   // currentUser
+let CUD     = null;   // currentUserData
+let consentOK = false;
+
+/* ══════════════════════════════════════════════════
+   AUTH STATE
+══════════════════════════════════════════════════ */
+onAuthStateChanged(auth, async user => {
+  CU  = user;
+  CUD = user ? await _getUser(user.uid) : null;
+  if (CUD) {
+    STATE.discountPct = CUD.discountPercent || 0;
+    STATE.refCode     = CUD.usedReferralCode || null;
+  }
+  _updateNavbar();
+  if (user) {
+    _checkPendingReview();
+    _loadMyOrders();
+  } else {
+    document.getElementById("myOrdersSection").style.display = "none";
+  }
+  // If auth overlay was open and user just signed in, proceed
+  if (user && document.getElementById("authOverlay").classList.contains("open")) {
+    closeAuth();
+    _buildStep3();
+    goTo(3);
+  }
+});
+
+async function _getUser(uid) {
+  try { const s=await getDoc(doc(db,"users",uid)); return s.exists()?s.data():null; } catch(e){ return null; }
+}
+
+function _updateNavbar() {
+  const isStaff = CUD && ["worker","manager","admin","superadmin"].includes(CUD.role);
+  document.querySelectorAll(".nav-guest").forEach(el => el.classList.toggle("d-none", !!CU));
+  document.querySelectorAll(".nav-authed").forEach(el => el.classList.toggle("d-none", !CU));
+  document.querySelectorAll(".nav-username").forEach(el => { el.textContent = CUD?.name || "My Account"; });
+  document.querySelectorAll(".nav-admin").forEach(el => el.classList.toggle("d-none", !isStaff));
+}
+
+window.doLogout = async () => { try { await signOut(auth); } catch(e){} };
+
+/* ══════════════════════════════════════════════════
+   STEP 1 — SERVICE CARDS
+══════════════════════════════════════════════════ */
+document.querySelectorAll(".svc-card").forEach(card => {
+  card.addEventListener("click", () => {
+    STATE.svcId = card.dataset.svc;
+    _renderPackages(STATE.svcId);
+    goTo(2);
+  });
+});
+
+/* ══════════════════════════════════════════════════
+   STEP 2 — PACKAGES
+══════════════════════════════════════════════════ */
+function _renderPackages(svcId) {
+  const svc = SERVICES[svcId];
+  document.getElementById("pkgStepLabel").textContent = svc.name + " — Choose Your Plan";
+  const grid = document.getElementById("pkgGrid");
+  grid.innerHTML = svc.packages.map(p => `
+    <div class="pkg-card${p.popular?" pkg-popular":""}" data-pkg="${p.id}" role="button" tabindex="0">
+      ${p.badge   ? `<div class="pkg-badge">${p.badge}</div>` : ""}
+      ${p.urgency ? `<div class="pkg-urgency"><i class="fas fa-fire me-1"></i>${p.urgency}</div>` : ""}
+      <div class="pkg-name">${p.label}</div>
+      <div class="pkg-price">₹${p.price.toLocaleString("en-IN")}</div>
+      <div class="pkg-delivery"><i class="fas fa-clock me-1"></i>Delivery: ${p.delivery}</div>
+      <ul class="pkg-features">
+        ${p.features.map(f=>`<li><i class="fas fa-check"></i>${f}</li>`).join("")}
+      </ul>
+      <div class="pkg-cta">Choose This Plan →</div>
+    </div>`).join("");
+
+  grid.querySelectorAll(".pkg-card").forEach(card => {
+    const activate = () => {
+      STATE.pkg = SERVICES[STATE.svcId].packages.find(p => p.id === card.dataset.pkg);
+      if (!CU) { openAuth("login"); return; }   // require auth before details
+      _buildStep3();
+      goTo(3);
+    };
+    card.addEventListener("click", activate);
+    card.addEventListener("keydown", e => { if(e.key==="Enter"||e.key===" ") activate(); });
+  });
+}
+
+document.getElementById("pkgBack").addEventListener("click", () => goTo(1));
+
+/* ══════════════════════════════════════════════════
+   STEP 3 — PROJECT DETAILS
+══════════════════════════════════════════════════ */
+function _buildStep3() {
+  const svc = SERVICES[STATE.svcId];
+  const pkg = STATE.pkg;
+  document.getElementById("step3Label").textContent =
+    `${svc.name}  ·  ${pkg.label}  ·  ₹${pkg.price.toLocaleString("en-IN")}`;
+  // Pre-fill if logged in
+  if (CUD) {
+    _sv("fName",  CUD.name  || "");
+    _sv("fEmail", CUD.email || "");
+    _sv("fPhone", CUD.phone || "");
+  }
+  // Service-specific extra fields
+  const extraWrap  = document.getElementById("extraFields");
+  const extraInner = document.getElementById("extraFieldsInner");
+  let extra = "";
+  if (STATE.svcId === "ppt") {
+    extra = `
+      <div class="col-md-4"><div class="field-group"><label class="field-label">Slide count</label>
+        <div class="field-wrap"><i class="fas fa-layer-group field-icon"></i>
+          <input type="number" id="fSlideCount" class="f-ctrl" placeholder="e.g. 12" min="1" max="100">
+        </div></div></div>
+      <div class="col-md-4"><div class="field-group"><label class="field-label">Topic / subject</label>
+        <div class="field-wrap"><i class="fas fa-book field-icon"></i>
+          <input type="text" id="fTopic" class="f-ctrl" placeholder="e.g. Electric Vehicles">
+        </div></div></div>
+      <div class="col-md-4"><div class="field-group"><label class="field-label">Target audience</label>
+        <div class="field-wrap"><i class="fas fa-users field-icon"></i>
+          <input type="text" id="fAudience" class="f-ctrl" placeholder="e.g. College professors">
+        </div></div></div>`;
+  } else if (STATE.svcId === "poster") {
+    extra = `
+      <div class="col-md-4"><div class="field-group"><label class="field-label">Poster size</label>
+        <div class="field-wrap"><i class="fas fa-expand field-icon"></i>
+          <select id="fPosterSize" class="f-ctrl"><option value="">Select…</option>
+            <option>A4</option><option>A3</option>
+            <option>Social Media (1:1)</option><option>Social Media (16:9)</option><option>Custom</option>
+          </select></div></div></div>
+      <div class="col-md-4"><div class="field-group"><label class="field-label">Main headline</label>
+        <div class="field-wrap"><i class="fas fa-heading field-icon"></i>
+          <input type="text" id="fHeadline" class="f-ctrl" placeholder="Your poster headline">
+        </div></div></div>
+      <div class="col-md-4"><div class="field-group"><label class="field-label">Brand colours <span style="opacity:.38">(optional)</span></label>
+        <div class="field-wrap"><i class="fas fa-palette field-icon"></i>
+          <input type="text" id="fBrandColors" class="f-ctrl" placeholder="e.g. #FF0000, Navy">
+        </div></div></div>`;
+  } else if (STATE.svcId === "website") {
+    extra = `
+      <div class="col-md-4"><div class="field-group"><label class="field-label">Website type</label>
+        <div class="field-wrap"><i class="fas fa-globe field-icon"></i>
+          <select id="fWebType" class="f-ctrl"><option value="">Select…</option>
+            <option>Portfolio</option><option>Business / Landing page</option>
+            <option>E-commerce</option><option>Blog</option><option>Other</option>
+          </select></div></div></div>
+      <div class="col-md-4"><div class="field-group"><label class="field-label">Domain <span style="opacity:.38">(if any)</span></label>
+        <div class="field-wrap"><i class="fas fa-link field-icon"></i>
+          <input type="text" id="fDomain" class="f-ctrl" placeholder="e.g. mysite.com">
+        </div></div></div>
+      <div class="col-md-4"><div class="field-group"><label class="field-label">Reference URLs <span style="opacity:.38">(optional)</span></label>
+        <div class="field-wrap"><i class="fas fa-external-link-alt field-icon"></i>
+          <input type="text" id="fRefUrls" class="f-ctrl" placeholder="Sites you like">
+        </div></div></div>`;
+  }
+  if (extra) { extraInner.innerHTML = extra; extraWrap.style.display = "block"; }
+  else { extraWrap.style.display = "none"; }
+}
+
+document.getElementById("prev3").addEventListener("click", () => goTo(2));
+document.getElementById("nextStep3").addEventListener("click", () => {
+  if (!_validateStep3()) return;
+  _collectStep3();
+  _buildReview();
+  goTo(4);
+});
+
+function _validateStep3() {
+  const checks = [
+    ["fName",         "errName",         v => v.trim().length > 0,                          "name is required"],
+    ["fEmail",        "errEmail",        v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),         "enter a valid email"],
+    ["fPhone",        "errPhone",        v => /^\+?\d{10,15}$/.test(v.replace(/\s/g,"")),   "enter a valid number"],
+    ["fProjectName",  "errProjectName",  v => v.trim().length > 0,                          "project name required"],
+    ["fInstructions", "errInstructions", v => v.trim().length >= 20,                        "min 20 characters"],
+  ];
+  let ok = true;
+  for (const [id, eid, test, msg] of checks) {
+    const el = document.getElementById(id); if (!el) continue;
+    const pass = test(el.value);
+    el.classList.toggle("is-invalid", !pass);
+    const er = document.getElementById(eid);
+    if (er) { er.textContent = msg; er.classList.toggle("show", !pass); }
+    if (!pass) ok = false;
+  }
+  const dl = document.getElementById("fDeadline");
+  if (dl?.value) {
+    const past = new Date(dl.value) < new Date(new Date().setHours(0,0,0,0));
+    dl.classList.toggle("is-invalid", past);
+    document.getElementById("errDeadline")?.classList.toggle("show", past);
+    if (past) ok = false;
+  }
+  return ok;
+}
+
+function _collectStep3() {
+  STATE.form = {
+    customerName:  _gv("fName"),    customerEmail: _gv("fEmail"),
+    customerPhone: _gv("fPhone"),   projectName:   _gv("fProjectName"),
+    deadline:      _gv("fDeadline"),driveLink:     _gv("fDriveLink"),
+    instructions:  _gv("fInstructions"),
+    // service-specific (undefined if absent)
+    slideCount:    _gv("fSlideCount"), topic:       _gv("fTopic"),
+    audience:      _gv("fAudience"),   posterSize:  _gv("fPosterSize"),
+    headline:      _gv("fHeadline"),   brandColors: _gv("fBrandColors"),
+    websiteType:   _gv("fWebType"),    domain:      _gv("fDomain"),
+    referenceUrls: _gv("fRefUrls")
+  };
+}
+
+/* ══════════════════════════════════════════════════
+   STEP 4 — ORDER SUMMARY
+══════════════════════════════════════════════════ */
+function _buildReview() {
+  const svc  = SERVICES[STATE.svcId];
+  const pkg  = STATE.pkg;
+  const fd   = STATE.form;
+  const orig = pkg.price;
+  const disc = Math.round(orig * STATE.discountPct / 100);
+  const fin  = orig - disc;
+  STATE.discount = disc;
+
+  const DAYS = {ppt:{elite:1,pro:2,starter:3},poster:{brand_kit:2,campaign:2,single:3},website:{business_pro:7,standard:5,landing:3}};
+  const days = DAYS[STATE.svcId]?.[pkg.id] || 3;
+  const delivDate = new Date(Date.now() + days*86400000).toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"});
+
+  const rr = (k,v,cls="") =>
+    `<div class="review-row"><span class="review-key">${k}</span><span class="review-val ${cls}">${v||'<span style="opacity:.28">—</span>'}</span></div>`;
+
+  document.getElementById("revSummary").innerHTML =
+    rr("Service",    svc.name) +
+    rr("Package",    pkg.label) +
+    rr("Original",   `₹${orig.toLocaleString("en-IN")}`) +
+    (disc > 0 ? rr("Referral discount", `-₹${disc.toLocaleString("en-IN")} (${STATE.discountPct}%)`, "discount") : "") +
+    rr("Total payable", `₹${fin.toLocaleString("en-IN")}`, "hl") +
+    rr("Est. delivery",  delivDate);
+
+  document.getElementById("revProject").innerHTML =
+    rr("Project",      fd.projectName) +
+    rr("Deadline",     fd.deadline || "Flexible") +
+    rr("Drive link",   fd.driveLink) +
+    rr("Instructions", fd.instructions?.length > 80 ? fd.instructions.slice(0,80)+"…" : fd.instructions);
+
+  document.getElementById("revContact").innerHTML =
+    rr("Name",  fd.customerName) +
+    rr("Email", fd.customerEmail, "hl") +
+    rr("Phone", fd.customerPhone, "hl");
+
+  document.getElementById("btnPayAmt").textContent = `₹${fin.toLocaleString("en-IN")}`;
+
+  // Mobile: WhatsApp primary (moved left, styled primary)
+  const isMob = window.innerWidth < 768;
+  const btnWa  = document.getElementById("btnWa");
+  const btnPay = document.getElementById("btnPay");
+  if (isMob) {
+    btnWa.style.order   = "-1";
+    btnPay.style.background   = "transparent";
+    btnPay.style.border       = "1px solid rgba(102,252,241,.3)";
+    btnPay.style.color        = "var(--cyan)";
+  }
+
+  window._TNWR = {
+    service:svc.name, package:pkg.label,
+    originalPrice:orig, discount:disc, discountPct:STATE.discountPct,
+    referralCode:STATE.refCode, finalPrice:fin, deliveryDate:delivDate, ...fd
+  };
+}
+
+/* ── Consent ──────────────────────────────────────── */
+document.getElementById("consentRow").addEventListener("click", () => {
+  consentOK = !consentOK;
+  document.getElementById("consentRow").classList.toggle("checked", consentOK);
+  if (consentOK) document.getElementById("errConsent").classList.remove("show");
+});
+document.getElementById("prev4").addEventListener("click", () => goTo(3));
+
+/* ══════════════════════════════════════════════════
+   WHATSAPP BOOKING (mobile-primary)
+══════════════════════════════════════════════════ */
+window.bookViaWhatsapp = async function() {
+  if (!consentOK) { document.getElementById("errConsent").classList.add("show"); return; }
+  const o   = window._TNWR;
+  const ref = "TNWR-" + Date.now().toString(36).toUpperCase().slice(-7);
+  const saved = await _saveOrder({...o, paymentMethod:"whatsapp", paymentStatus:"pending", orderId:ref});
+  _sendEmails({...o, orderId:saved.orderId}, null);
+  const msg = [
+    "*New Booking — TN WEB RATS*",
+    `*Order ID:* ${saved.orderId}`,
+    `*Service:* ${o.service} — ${o.package}`,
+    `*Amount:* ₹${o.finalPrice.toLocaleString("en-IN")}`,
+    o.discount > 0 ? `*Discount:* -₹${o.discount} (${o.discountPct}%)` : null,
+    ``, `*Name:* ${o.customerName}`,
+    `*Email:* ${o.customerEmail}`, `*Phone:* ${o.customerPhone}`,
+    ``, `*Project:* ${o.projectName}`, `*Deadline:* ${o.deadline || "Flexible"}`,
+    `*Instructions:* ${o.instructions}`,
+    o.driveLink ? `*Drive:* ${o.driveLink}` : null
+  ].filter(Boolean).join("\n");
+  window.open(`https://wa.me/${WA_NUM}?text=${encodeURIComponent(msg)}`, "_blank");
+  _showSuccess(saved.orderId);
+};
+
+/* ══════════════════════════════════════════════════
+   RAZORPAY (desktop-primary)
+══════════════════════════════════════════════════ */
+window.initiatePayment = function() {
+  if (!consentOK) { document.getElementById("errConsent").classList.add("show"); return; }
+  if (typeof Razorpay === "undefined") { showToast("Payment gateway loading — try again","err"); return; }
+  const o = window._TNWR;
+  const rzp = new Razorpay({
+    key:RAZORPAY_KEY, amount:o.finalPrice*100, currency:"INR",
+    name:"TN WEB RATS", description:`${o.service} — ${o.package}`,
+    prefill:{name:o.customerName, email:o.customerEmail, contact:o.customerPhone},
+    theme:{color:"#66FCF1"},
+    handler: async resp => {
+      document.getElementById("btnPay").classList.add("loading");
+      const ref = "TNWR-" + Date.now().toString(36).toUpperCase().slice(-7);
+      const saved = await _saveOrder({...o, paymentMethod:"razorpay", paymentId:resp.razorpay_payment_id, paymentStatus:"paid", orderId:ref});
+      _sendEmails({...o, orderId:saved.orderId}, resp.razorpay_payment_id);
+      _showSuccess(saved.orderId);
+    }
+  });
+  rzp.open();
+};
+
+/* ── Save order to Firestore ──────────────────────── */
+async function _saveOrder(data) {
+  try {
+    const ref = await addDoc(collection(db,"orders"),{
+      ...data, customerId:CU?.uid||"guest",
+      status:"pending", reviewDone:false, createdAt:serverTimestamp()
+    });
+    return {orderId:ref.id};
+  } catch(e){ console.error("saveOrder:",e); return {orderId:data.orderId}; }
+}
+
+/* ══════════════════════════════════════════════════
+   EMAIL — BACKGROUND ONLY, FIRE-AND-FORGET
+   Never awaited. Failures only console.log.
+══════════════════════════════════════════════════ */
+function _sendEmails(o, paymentId) {
+  Promise.resolve().then(() => {
+    if (typeof emailjs === "undefined") { console.log("[email] not loaded"); return; }
+    emailjs.send(EJS.serviceId, EJS.ownerTpl, {
+      to_email:OWNER_EMAIL, order_id:o.orderId,
+      service:o.service, package:o.package,
+      original_price:`₹${o.originalPrice}`,
+      discount:o.discount>0?`-₹${o.discount} (${o.discountPct}% · ${o.referralCode})`:"None",
+      final_price:`₹${o.finalPrice}`,
+      payment_id:paymentId||"WhatsApp/Manual",
+      customer_name:o.customerName, customer_email:o.customerEmail,
+      customer_phone:o.customerPhone, project_name:o.projectName,
+      deadline:o.deadline||"Flexible", instructions:o.instructions,
+      drive_link:o.driveLink||"Not provided", extra_fields:_extraStr(o),
+      delivery_date:o.deliveryDate
+    }).catch(e=>console.log("[email] owner fail:",e));
+    emailjs.send(EJS.serviceId, EJS.customerTpl, {
+      to_email:o.customerEmail, customer_name:o.customerName,
+      order_id:o.orderId, service:o.service, package:o.package,
+      amount_paid:`₹${o.finalPrice}`, delivery_date:o.deliveryDate,
+      contact_whatsapp:"+91 8300920680", contact_email:OWNER_EMAIL,
+      instagram:"@tn_web_rats"
+    }).catch(e=>console.log("[email] customer fail:",e));
+  });
+}
+
+function _extraStr(o) {
+  return [
+    o.slideCount?`Slides: ${o.slideCount}`:null, o.topic?`Topic: ${o.topic}`:null,
+    o.audience?`Audience: ${o.audience}`:null,   o.posterSize?`Size: ${o.posterSize}`:null,
+    o.headline?`Headline: ${o.headline}`:null,    o.brandColors?`Colors: ${o.brandColors}`:null,
+    o.websiteType?`Web type: ${o.websiteType}`:null, o.domain?`Domain: ${o.domain}`:null,
+    o.referenceUrls?`References: ${o.referenceUrls}`:null
+  ].filter(Boolean).join("\n") || "N/A";
+}
+
+/* ── Success screen ───────────────────────────────── */
+function _showSuccess(orderId) {
+  document.getElementById("step4").classList.remove("active");
+  document.getElementById("successRef").textContent = "ORDER ID: " + orderId;
+  document.getElementById("successOverlay").classList.add("show");
+  document.querySelectorAll(".wizard-step").forEach(d => { d.classList.remove("active"); d.classList.add("done"); });
+  document.querySelector(".main-content-wrapper")?.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* ══════════════════════════════════════════════════
+   CUSTOMER: MY ORDERS
+══════════════════════════════════════════════════ */
+async function _loadMyOrders() {
+  if (!CU) return;
+  const sec  = document.getElementById("myOrdersSection");
+  const body = document.getElementById("myOrdersList");
+  sec.style.display = "block";
+  body.innerHTML = `<div style="text-align:center;padding:24px;font-family:var(--mono);font-size:.68rem;color:rgba(197,198,199,.28)">loading…</div>`;
+  try {
+    const q = query(collection(db,"orders"), where("customerId","==",CU.uid), orderBy("createdAt","desc"));
+    const snap = await getDocs(q);
+    const orders = snap.docs.map(d=>({id:d.id,...d.data()}));
+    if (!orders.length) {
+      body.innerHTML = `<div style="text-align:center;padding:24px;font-family:var(--mono);font-size:.68rem;color:rgba(197,198,199,.22)">no orders yet — book your first project above!</div>`;
+      return;
+    }
+    body.innerHTML = `<table class="my-orders-table">
+      <thead><tr><th>Order ID</th><th>Service · Package</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+      <tbody>
+      ${orders.map(o=>`<tr>
+        <td style="font-family:var(--mono);font-size:.7rem;color:var(--cyan)">${o.id.slice(0,10)}…</td>
+        <td><strong>${o.service||"—"}</strong><br><small style="color:rgba(197,198,199,.4)">${o.package||""}</small></td>
+        <td style="color:var(--cyan);font-weight:700">₹${(o.finalPrice||0).toLocaleString("en-IN")}</td>
+        <td><span class="status-pill pill-${o.status||"pending"}">${o.status||"pending"}</span></td>
+        <td style="font-size:.78rem;color:rgba(197,198,199,.35)">${o.createdAt?.toDate?.().toLocaleDateString("en-IN")||"—"}</td>
+      </tr>`).join("")}
+      </tbody>
+    </table>`;
+  } catch(e) {
+    body.innerHTML = `<div style="text-align:center;padding:24px;font-family:var(--mono);font-size:.68rem;color:rgba(197,198,199,.22)">could not load orders</div>`;
+  }
+}
+
+window.showMyOrders = function() {
+  document.getElementById("myOrdersSection")?.scrollIntoView({behavior:"smooth",block:"start"});
+};
+
+/* ══════════════════════════════════════════════════
+   REVIEW PROMPT — fires when completed order has no review
+══════════════════════════════════════════════════ */
+async function _checkPendingReview() {
+  if (!CU) return;
+  try {
+    const q = query(collection(db,"orders"),
+      where("customerId","==",CU.uid),
+      where("status","==","complete"),
+      where("reviewDone","==",false));
+    const snap = await getDocs(q);
+    if (!snap.empty) {
+      const orderId = snap.docs[0].id;
+      const od      = snap.docs[0].data();
+      document.getElementById("reviewOrderLabel").textContent =
+        `${od.service || "Your order"} — ${od.package || ""}`;
+      document.getElementById("reviewOverlay").classList.add("open");
+      _initReviewStars(orderId);
+    }
+  } catch(e){}
+}
+
+function _initReviewStars(orderId) {
+  let selected = 0;
+  const stars  = document.querySelectorAll(".star-btn");
+  const light  = n => stars.forEach((s,i) => { s.classList.toggle("lit",i<n); s.textContent = i<n?"★":"☆"; });
+  stars.forEach(s => {
+    const n = +s.dataset.n;
+    s.addEventListener("mouseover", () => light(n));
+    s.addEventListener("mouseleave",() => light(selected));
+    s.addEventListener("click",     () => { selected = n; light(n); });
+  });
+  document.getElementById("btnSubmitReview").onclick = async function() {
+    if (!selected) { showToast("Please select a star rating","err"); return; }
+    const comment = document.getElementById("reviewComment").value.trim();
+    this.classList.add("loading");
+    try {
+      await updateDoc(doc(db,"orders",orderId),{
+        "review.rating":selected,"review.comment":comment,
+        "review.createdAt":serverTimestamp(), reviewDone:true
+      });
+      await addDoc(collection(db,"reviews"),{
+        orderId, rating:selected, comment,
+        customerId:CU.uid, service:window._TNWR?.service||null,
+        createdAt:serverTimestamp()
+      });
+      document.getElementById("reviewOverlay").classList.remove("open");
+      showToast("Thank you for your review! ⭐","ok");
+    } catch(e){ console.error("review:",e); }
+    this.classList.remove("loading");
+  };
+}
+
+/* ══════════════════════════════════════════════════
+   AUTH MODAL
+══════════════════════════════════════════════════ */
+window.openAuth = function(mode) {
+  switchAuth(mode || "login");
+  document.getElementById("authOverlay").classList.add("open");
+};
+window.closeAuth = function() { document.getElementById("authOverlay").classList.remove("open"); };
+window.switchAuth = function(mode) {
+  document.getElementById("authLogin").classList.toggle("active",    mode==="login");
+  document.getElementById("authRegister").classList.toggle("active", mode==="register");
+};
+
+// Close on backdrop
+document.getElementById("authOverlay").addEventListener("click", e => {
+  if (e.target === document.getElementById("authOverlay")) closeAuth();
+});
+document.addEventListener("keydown", e => { if(e.key==="Escape") closeAuth(); });
+
+// LOGIN
+document.getElementById("btnLogin").addEventListener("click", async function() {
+  const email = _gv("loginEmail"), pass = _gv("loginPassword");
+  const errEl = document.getElementById("loginErr"); errEl.textContent = "";
+  if (!email || !pass) { errEl.textContent = "// fill all fields"; return; }
+  this.classList.add("loading"); this.disabled = true;
+  try { await signInWithEmailAndPassword(auth, email, pass); closeAuth(); }
+  catch(e) { errEl.textContent = "// " + _fbErr(e.code); }
+  this.classList.remove("loading"); this.disabled = false;
+});
+document.addEventListener("keydown", e => {
+  if (e.key === "Enter" && document.getElementById("authLogin").classList.contains("active"))
+    document.getElementById("btnLogin").click();
+});
+
+// REGISTER
+document.getElementById("btnRegister").addEventListener("click", async function() {
+  const name     = _gv("regName"),  email  = _gv("regEmail");
+  const phone    = _gv("regPhone"), pass   = _gv("regPassword");
+  const confirm  = _gv("regConfirm"), code = _gv("regReferral").toUpperCase();
+  const errEl    = document.getElementById("regErr"); errEl.textContent = "";
+  if (!name||!email||!phone||!pass) { errEl.textContent = "// fill all required fields"; return; }
+  if (pass !== confirm)             { errEl.textContent = "// passwords do not match"; return; }
+  if (pass.length < 6)              { errEl.textContent = "// password must be 6+ characters"; return; }
+  this.classList.add("loading"); this.disabled = true;
+  let refData = null;
+  if (code) {
+    refData = await _validateCode(code);
+    if (!refData.valid) { errEl.textContent = "// " + refData.message; this.classList.remove("loading"); this.disabled=false; return; }
+  }
+  try {
+    const {user} = await createUserWithEmailAndPassword(auth, email, pass);
+    await setDoc(doc(db,"users",user.uid), {
+      name, email, phone, role:"customer",
+      referralCode:null, referralTier:null,
+      usedReferralCode:code||null, referredBy:refData?.ownerUid||null,
+      discountPercent:refData?.discountPercent||0, createdAt:serverTimestamp()
+    });
+    if (refData && code) {
+      await updateDoc(doc(db,"referralCodes",code),{timesUsed:(refData.timesUsed||0)+1});
+    }
+    if (refData?.discountPercent > 0)
+      showToast(`Referral applied — ${refData.discountPercent}% off all orders!`,"ok");
+    closeAuth();
+  } catch(e) { errEl.textContent = "// " + _fbErr(e.code); }
+  this.classList.remove("loading"); this.disabled = false;
+});
+
+// Live referral code validation (600ms debounce)
+let _refT;
+document.getElementById("regReferral").addEventListener("input", function() {
+  clearTimeout(_refT);
+  const code = this.value.trim().toUpperCase();
+  const fb   = document.getElementById("refFeedback");
+  if (!code) { fb.textContent=""; fb.className="ref-feedback"; return; }
+  fb.textContent = "checking…"; fb.className = "ref-feedback checking";
+  _refT = setTimeout(async () => {
+    const r = await _validateCode(code);
+    fb.textContent = (r.valid?"✓ ":"✗ ") + r.message;
+    fb.className   = "ref-feedback " + (r.valid?"valid":"invalid");
+  }, 600);
+});
+
+async function _validateCode(code) {
+  try {
+    const snap = await getDoc(doc(db,"referralCodes",code));
+    if (!snap.exists()) return {valid:false, message:"Invalid referral code."};
+    const d = snap.data();
+    // Customers cannot own codes
+    const ownerSnap = await getDoc(doc(db,"users",d.ownerUid));
+    if (ownerSnap.exists() && ownerSnap.data().role === "customer")
+      return {valid:false, message:"This code cannot be used."};
+    return {valid:true, ownerUid:d.ownerUid, discountPercent:d.discountPercent,
+            timesUsed:d.timesUsed||0, message:`${d.discountPercent}% discount applied!`};
+  } catch(e) { return {valid:false, message:"Could not validate. Try again."}; }
+}
+
+/* ── Wizard navigation ────────────────────────────── */
+window.goTo = function(n) {
+  [1,2,3,4].forEach(i => {
+    document.getElementById("step"+i)?.classList.remove("active");
+    const ws = document.getElementById("ws"+i);
+    if (ws) { ws.classList.remove("active","done"); if(i<n) ws.classList.add("done"); if(i===n) ws.classList.add("active"); }
+  });
+  document.getElementById("step"+n)?.classList.add("active");
+  STATE.step = n;
+  document.querySelector(".main-content-wrapper")?.scrollTo({top:0,behavior:"smooth"});
+};
+
+/* ── Utilities ────────────────────────────────────── */
+function _gv(id){ return document.getElementById(id)?.value||""; }
+function _sv(id,v){ const el=document.getElementById(id); if(el) el.value=v; }
+
+window.showToast = function(msg, type="") {
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.className = `tnwr-toast show ${type}`;
+  clearTimeout(t._t); t._t = setTimeout(()=>{ t.className="tnwr-toast"; }, 3500);
+};
+
+function _fbErr(code) {
+  return ({
+    "auth/email-already-in-use":"email already registered.",
+    "auth/invalid-email":"enter a valid email.",
+    "auth/weak-password":"password must be 6+ characters.",
+    "auth/user-not-found":"no account found.",
+    "auth/wrong-password":"incorrect password.",
+    "auth/too-many-requests":"too many attempts — try later.",
+    "auth/invalid-credential":"invalid email or password."
+  })[code] || "something went wrong. try again.";
+}
+
+// Clear validation styling on input
+["fName","fEmail","fPhone","fProjectName","fDeadline","fInstructions"].forEach(id => {
+  document.getElementById(id)?.addEventListener("input", function(){ this.classList.remove("is-invalid"); });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,233 @@
+/* ═══════════════════════════════════════════════════════════
+   Statics/global.css — TN WEB RATS
+   Link AFTER Statics/styles.css on every page that needs it.
+   Contains: shared utilities, booking-page helpers, modal styles,
+   admin utilities. Does NOT override styles.css.
+════════════════════════════════════════════════════════════ */
+
+/* ── Token shorthand ──────────────────────────────────────── */
+:root {
+  --bg:   #0B0C10; --dark:  #1F2833;
+  --gray: #C5C6C7; --cyan:  #66FCF1; --teal: #45A29E;
+  --mono: 'Share Tech Mono', monospace;
+  --sans: 'Rajdhani', sans-serif;
+}
+
+/* ── 44 px touch targets on all interactive elements ─────── */
+button, a, select, input, textarea,
+input[type="date"], input[type="month"], input[type="number"] {
+  min-height: 44px;
+}
+
+/* ── Horizontal scroll guard ─────────────────────────────── */
+body { overflow-x: hidden; }
+img  { max-width: 100%; }
+
+/* ── Neural background iframe ────────────────────────────── */
+.neural-background-iframe {
+  position: fixed; inset: 0;
+  width: 100%; height: 100%;
+  border: none; z-index: 0;
+  pointer-events: none;
+  transform: scale(1.3);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BOOKING PAGE — service & package cards
+════════════════════════════════════════════════════════════ */
+.pkg-card.pkg-popular { border-color: var(--cyan) !important; transform: scale(1.04); z-index: 2; }
+.pkg-card.pkg-popular:hover { transform: scale(1.04) translateY(-4px) !important; }
+
+/* ═══════════════════════════════════════════════════════════
+   AUTH / REVIEW MODALS
+════════════════════════════════════════════════════════════ */
+.auth-overlay, .review-overlay {
+  position: fixed; inset: 0; z-index: 9000;
+  background: rgba(0, 0, 0, .72);
+  display: none; align-items: center; justify-content: center;
+  padding: 16px; backdrop-filter: blur(5px);
+}
+.auth-overlay.open, .review-overlay.open { display: flex; }
+
+.auth-box, .review-box {
+  width: 100%; max-width: 460px;
+  background: rgba(11, 14, 22, .97);
+  border: 1px solid rgba(102, 252, 241, .18);
+  border-radius: 20px; padding: 40px 36px;
+  max-height: 90vh; overflow-y: auto;
+  position: relative; animation: tnwr-in .28s ease;
+}
+@media (max-width: 500px) { .auth-box, .review-box { padding: 26px 20px; } }
+
+.auth-close {
+  position: absolute; top: 14px; right: 16px;
+  background: none; border: none;
+  color: rgba(197, 198, 199, .35); font-size: 1.3rem;
+  cursor: pointer; min-width: 44px; min-height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; transition: color .2s;
+}
+.auth-close:hover { color: var(--cyan); }
+
+/* ── Referral code validation feedback ───────────────────── */
+.ref-feedback { font-family: var(--mono); font-size: .62rem; letter-spacing: .08em; margin-top: 5px; min-height: 16px; }
+.ref-feedback.valid   { color: var(--cyan); }
+.ref-feedback.invalid { color: #ff4d6d; }
+.ref-feedback.checking{ color: rgba(197, 198, 199, .35); }
+
+/* ═══════════════════════════════════════════════════════════
+   STAR RATING BUTTONS
+════════════════════════════════════════════════════════════ */
+.star-btn {
+  font-size: 2.2rem; color: rgba(102, 252, 241, .2);
+  cursor: pointer; transition: color .2s;
+  background: none; border: none; line-height: 1;
+  min-width: 44px; min-height: 44px;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.star-btn.lit  { color: var(--cyan); }
+.star-btn:hover{ color: rgba(102, 252, 241, .65); }
+
+/* ═══════════════════════════════════════════════════════════
+   ORDER SUMMARY CARD
+════════════════════════════════════════════════════════════ */
+.order-summary-card {
+  background: rgba(31, 40, 51, .84);
+  border: 1px solid rgba(102, 252, 241, .1);
+  border-radius: 16px; padding: 32px 28px;
+}
+@media (max-width: 767px) { .order-summary-card { padding: 22px 18px; } }
+
+/* ── Discount line in summary ─────────────────────────────── */
+.discount-line { color: #66fcb3 !important; }
+
+/* ═══════════════════════════════════════════════════════════
+   PAYMENT BUTTONS — mobile swap (WhatsApp primary on <768px)
+════════════════════════════════════════════════════════════ */
+@media (max-width: 767px) {
+  #btnWa  { order: -1; width: 100%; justify-content: center; }
+  #btnPay { width: 100%; justify-content: center; }
+  #paymentBtns              { flex-direction: column; }
+  #paymentBtns .btns-right  { flex-direction: column; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TOAST NOTIFICATION
+════════════════════════════════════════════════════════════ */
+.tnwr-toast {
+  position: fixed; bottom: 24px; left: 50%;
+  transform: translateX(-50%) translateY(120%);
+  background: rgba(15, 17, 23, .97);
+  border: 1px solid rgba(102, 252, 241, .18);
+  color: var(--gray); padding: 11px 24px;
+  border-radius: 100px; font-family: var(--mono);
+  font-size: .7rem; letter-spacing: .08em;
+  z-index: 9999; transition: transform .35s ease;
+  pointer-events: none; white-space: nowrap;
+}
+.tnwr-toast.show { transform: translateX(-50%) translateY(0); }
+.tnwr-toast.ok   { border-color: rgba(102, 252, 241, .5); color: var(--cyan); }
+.tnwr-toast.err  { border-color: rgba(220,  53,  69, .5); color: #ff6b7a; }
+
+/* ═══════════════════════════════════════════════════════════
+   STATUS PILLS (shared between book.html + admin-dashboard)
+════════════════════════════════════════════════════════════ */
+.status-pill {
+  display: inline-block; font-family: var(--mono);
+  font-size: .6rem; letter-spacing: .08em;
+  padding: 3px 10px; border-radius: 20px; text-transform: uppercase;
+}
+.pill-pending     { background: rgba(255,193,7,.1);  color: #ffc107; border: 1px solid rgba(255,193,7,.22); }
+.pill-in_progress { background: rgba(13,202,240,.1); color: #0dcaf0; border: 1px solid rgba(13,202,240,.22); }
+.pill-complete    { background: rgba(102,252,241,.1);color: var(--cyan); border: 1px solid rgba(102,252,241,.22); }
+.pill-cancelled   { background: rgba(220,53,69,.08); color: #ff6b7a; border: 1px solid rgba(220,53,69,.18); }
+
+/* ── Role pills ──────────────────────────────────────────── */
+.role-pill {
+  display: inline-block; font-family: var(--mono);
+  font-size: .58rem; letter-spacing: .07em;
+  padding: 2px 9px; border-radius: 20px; text-transform: uppercase;
+}
+.role-customer   { background: rgba(197,198,199,.07); color: rgba(197,198,199,.5); border: 1px solid rgba(197,198,199,.12); }
+.role-worker     { background: rgba(102,252,241,.08); color: var(--cyan);   border: 1px solid rgba(102,252,241,.18); }
+.role-manager    { background: rgba(255,193,7,.08);   color: #ffc107;       border: 1px solid rgba(255,193,7,.18); }
+.role-admin      { background: rgba(220,53,69,.08);   color: #ff6b7a;       border: 1px solid rgba(220,53,69,.18); }
+.role-superadmin { background: rgba(111,66,193,.12);  color: #c59dff;       border: 1px solid rgba(111,66,193,.25); }
+
+/* ═══════════════════════════════════════════════════════════
+   DASHBOARD SHARED COMPONENTS
+════════════════════════════════════════════════════════════ */
+.dash-input {
+  background: rgba(11,12,16,.8); border: 1px solid rgba(102,252,241,.14);
+  border-radius: 8px; color: var(--gray); font-family: var(--sans);
+  font-size: .9rem; padding: 9px 13px; width: 100%;
+  outline: none; transition: border-color .25s;
+}
+.dash-input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(102,252,241,.08); }
+.dash-input::placeholder { color: rgba(197,198,199,.2); }
+select.dash-input option { background: var(--dark); }
+
+.code-tag {
+  font-family: var(--mono); font-size: .78rem;
+  background: rgba(102,252,241,.08); color: var(--cyan);
+  padding: 4px 10px; border-radius: 6px;
+  border: 1px solid rgba(102,252,241,.18); display: inline-block;
+}
+
+/* ── Payroll alloc rows ───────────────────────────────────── */
+.alloc-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 10px 0; border-bottom: 1px solid rgba(102,252,241,.06);
+}
+.alloc-row:last-child { border-bottom: none; }
+
+/* ── Success card ─────────────────────────────────────────── */
+.success-card {
+  background: rgba(31,40,51,.84);
+  border: 1px solid rgba(102,252,241,.2);
+  border-radius: 20px; padding: 48px 36px;
+  animation: tnwr-in .4s ease;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ADMIN SIDEBAR — MODULE 8 MOBILE DRAWER BASE
+   (rest of drawer logic is inline in admin-dashboard.html)
+════════════════════════════════════════════════════════════ */
+.nav-overlay {
+  display: none; position: fixed; inset: 0; z-index: 1069;
+  background: rgba(0, 0, 0, .68); backdrop-filter: blur(3px);
+}
+.nav-overlay.is-visible { display: block; }
+
+/* ═══════════════════════════════════════════════════════════
+   NARROW SCREEN FALLBACKS
+════════════════════════════════════════════════════════════ */
+@media (max-width: 400px) {
+  .svc-grid  { grid-template-columns: 1fr !important; }
+  .stat-grid { grid-template-columns: 1fr 1fr !important; }
+  .pkg-card.pkg-popular { transform: scale(1) !important; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   UTILITY CLASSES
+════════════════════════════════════════════════════════════ */
+.text-cyan      { color: var(--cyan) !important; }
+.highlight-cyan { color: var(--cyan); }
+.text-ok        { color: #66fcb3; }
+.text-warn      { color: #ffc107; }
+.text-danger-c  { color: #ff6b7a; }
+.empty-state {
+  text-align: center; padding: 40px 20px;
+  font-family: var(--mono); font-size: .65rem;
+  letter-spacing: .12em; color: rgba(197,198,199,.22);
+  text-transform: uppercase;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   KEYFRAMES
+════════════════════════════════════════════════════════════ */
+@keyframes tnwr-in {
+  from { opacity: 0; transform: scale(.94) translateY(10px); }
+  to   { opacity: 1; transform: scale(1)   translateY(0); }
+}
+@keyframes tnwr-spin { to { transform: rotate(360deg); } }
