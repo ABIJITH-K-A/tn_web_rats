@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Join Staff - TN WEB RATS</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style>
+:root{--bg:#0B0C10;--panel:#1F2833;--text:#C5C6C7;--cyan:#66FCF1;--teal:#45A29E;--danger:#ff4d6d;--muted:rgba(197,198,199,.45);}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;display:flex;align-items:center;justify-content:center;padding:20px}a{color:var(--cyan)}
+.wrap{width:100%;max-width:640px;background:rgba(31,40,51,.92);border:1px solid rgba(102,252,241,.18);border-radius:16px;padding:24px}
+.brand{text-align:center;margin-bottom:18px}.brand h1{margin:0;font-size:1.1rem;letter-spacing:.08em}.brand p{margin:4px 0 0;color:var(--muted);font-size:.85rem}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}.tab{border:1px solid rgba(102,252,241,.2);background:transparent;color:var(--text);padding:10px 12px;border-radius:10px;cursor:pointer}.tab.active{background:rgba(102,252,241,.12);color:var(--cyan)}
+.panel{display:none}.panel.active{display:block}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{margin-bottom:10px}.field label{display:block;font-size:.75rem;color:var(--muted);margin-bottom:5px}.field input{width:100%;padding:11px 12px;border-radius:10px;border:1px solid rgba(102,252,241,.15);background:rgba(11,12,16,.8);color:var(--text);outline:none}.field input:focus{border-color:var(--cyan)}
+.btn-main{width:100%;border:0;border-radius:10px;padding:12px;font-weight:700;letter-spacing:.05em;background:linear-gradient(90deg,var(--teal),var(--cyan));color:#0B0C10}
+.alert{display:none;border-radius:10px;padding:10px 12px;font-size:.85rem;margin-bottom:12px}.alert.show{display:block}.alert.err{background:rgba(255,77,109,.12);color:#ff9fb0;border:1px solid rgba(255,77,109,.35)}.alert.ok{background:rgba(102,252,241,.1);color:var(--cyan);border:1px solid rgba(102,252,241,.28)}
+.note{margin-top:14px;font-size:.8rem;color:var(--muted);text-align:center}
+@media(max-width:560px){.row2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <h1>TN WEB RATS - JOIN STAFF</h1>
+    <p>For admin, manager and worker accounts</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" id="tabBtnLogin" type="button">Sign In</button>
+    <button class="tab" id="tabBtnJoin" type="button">Join With Invite Key</button>
+  </div>
+
+  <div id="loginAlert" class="alert err"></div>
+  <div id="joinAlert" class="alert err"></div>
+
+  <div class="panel active" id="loginPanel">
+    <div class="field">
+      <label for="lEmail">Email</label>
+      <input id="lEmail" type="email" autocomplete="email" placeholder="you@tnwebrats.com">
+    </div>
+    <div class="field">
+      <label for="lPass">Password</label>
+      <input id="lPass" type="password" autocomplete="current-password" placeholder="Password">
+    </div>
+    <button class="btn-main" id="btnLogin" type="button"><i class="fas fa-right-to-bracket"></i> Sign In</button>
+  </div>
+
+  <div class="panel" id="joinPanel">
+    <div class="field">
+      <label for="jKey">Invite Key</label>
+      <input id="jKey" type="text" autocomplete="off" placeholder="TNWR-XXXX-XXXX-XXXX" style="text-transform:uppercase;letter-spacing:.08em">
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label for="jFirst">First Name</label>
+        <input id="jFirst" type="text" autocomplete="given-name" placeholder="First">
+      </div>
+      <div class="field">
+        <label for="jLast">Last Name</label>
+        <input id="jLast" type="text" autocomplete="family-name" placeholder="Last">
+      </div>
+    </div>
+    <div class="field">
+      <label for="jEmail">Email</label>
+      <input id="jEmail" type="email" autocomplete="email" placeholder="you@tnwebrats.com">
+    </div>
+    <div class="field">
+      <label for="jPhone">Phone</label>
+      <input id="jPhone" type="tel" autocomplete="tel" placeholder="+919876543210">
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label for="jPass">Password</label>
+        <input id="jPass" type="password" autocomplete="new-password" placeholder="Min 8 chars">
+      </div>
+      <div class="field">
+        <label for="jConfirm">Confirm Password</label>
+        <input id="jConfirm" type="password" autocomplete="new-password" placeholder="Repeat password">
+      </div>
+    </div>
+    <button class="btn-main" id="btnJoin" type="button"><i class="fas fa-user-plus"></i> Create Staff Account</button>
+  </div>
+
+  <div class="note">
+    Owner or superadmin account? Use <a href="admin-signup.html">admin portal</a>.
+    Customer account? Use <a href="signup.html">signup</a>.
+  </div>
+</div>
+
+<script type="module">
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBf1c5bC31M0m5PVX67QsyeiOIS-0acRkI",
+  authDomain: "unofficial-webrats.firebaseapp.com",
+  projectId: "unofficial-webrats",
+  storageBucket: "unofficial-webrats.firebasestorage.app",
+  messagingSenderId: "378552539429",
+  appId: "1:378552539429:web:e4cf876e5b65c9fd4ee2cc",
+  measurementId: "G-JYSYHTJKD7"
+};
+
+const ROLE_DASHBOARD = {
+  owner: "owner-dashboard.html",
+  superadmin: "superadmin-dashboard.html",
+  admin: "admin-dashboard.html",
+  manager: "manager-dashboard.html",
+  worker: "worker-dashboard.html"
+};
+
+const ALLOWED_ROLES = new Set(["admin","manager","worker"]);
+const ROLE_TIERS = {
+  worker: { code:"WRK", pct:5 },
+  manager:{ code:"MGR", pct:10 },
+  admin:  { code:"ADM", pct:15 }
+};
+
+const { initializeApp, getApps, getApp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
+const { getFirestore, doc, getDoc, setDoc, updateDoc, serverTimestamp, increment } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+
+const app = getApps().length ? getApp() : initializeApp(FIREBASE_CONFIG);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const $ = id => document.getElementById(id);
+
+function showAlert(id, msg, type="err"){
+  const el = $(id);
+  el.className = `alert ${type} show`;
+  el.textContent = msg;
+}
+function clearAlerts(){
+  ["loginAlert","joinAlert"].forEach(id=>{
+    const el=$(id); el.className="alert err"; el.textContent="";
+  });
+}
+function switchTab(mode){
+  clearAlerts();
+  const login = mode === "login";
+  $("tabBtnLogin").classList.toggle("active", login);
+  $("tabBtnJoin").classList.toggle("active", !login);
+  $("loginPanel").classList.toggle("active", login);
+  $("joinPanel").classList.toggle("active", !login);
+}
+function userErr(code){
+  return ({
+    "auth/invalid-email":"Enter a valid email.",
+    "auth/invalid-credential":"Invalid email or password.",
+    "auth/wrong-password":"Invalid email or password.",
+    "auth/user-not-found":"Account not found.",
+    "auth/email-already-in-use":"Email already registered.",
+    "auth/weak-password":"Password must be stronger.",
+    "auth/too-many-requests":"Too many attempts. Try later."
+  })[code] || "Something went wrong.";
+}
+
+function makeReferralCode(role){
+  const tier = ROLE_TIERS[role] || ROLE_TIERS.worker;
+  const seg = () => Math.random().toString(36).toUpperCase().slice(2,6).padEnd(4,"X");
+  return `TNWR-${tier.code}-${seg()}`;
+}
+
+async function loadUserData(uid){
+  const snap = await getDoc(doc(db,"users",uid)).catch(()=>null);
+  return snap?.exists() ? snap.data() : null;
+}
+
+onAuthStateChanged(auth, async user => {
+  if(!user) return;
+  const d = await loadUserData(user.uid);
+  const role = (d?.role || "").toLowerCase();
+  if (ROLE_DASHBOARD[role]) {
+    window.location.replace(ROLE_DASHBOARD[role]);
+  }
+});
+
+$("tabBtnLogin").addEventListener("click",()=>switchTab("login"));
+$("tabBtnJoin").addEventListener("click",()=>switchTab("join"));
+
+$("btnLogin").addEventListener("click", async ()=>{
+  clearAlerts();
+  const email = $("lEmail").value.trim().toLowerCase();
+  const pass = $("lPass").value;
+  if(!email || !pass){ showAlert("loginAlert","Email and password are required."); return; }
+
+  try{
+    const cred = await signInWithEmailAndPassword(auth, email, pass);
+    const d = await loadUserData(cred.user.uid);
+    const role = (d?.role || "").toLowerCase();
+
+    if(!ALLOWED_ROLES.has(role)){
+      await signOut(auth).catch(()=>{});
+      if(role === "owner" || role === "superadmin") showAlert("loginAlert","Use admin portal login for owner/superadmin.");
+      else showAlert("loginAlert","This account does not have staff portal access.");
+      return;
+    }
+
+    window.location.replace(ROLE_DASHBOARD[role]);
+  }catch(e){
+    showAlert("loginAlert", userErr(e.code));
+  }
+});
+
+$("btnJoin").addEventListener("click", async ()=>{
+  clearAlerts();
+
+  const inviteKey = $("jKey").value.trim().toUpperCase();
+  const first = $("jFirst").value.trim();
+  const last = $("jLast").value.trim();
+  const email = $("jEmail").value.trim().toLowerCase();
+  const phone = $("jPhone").value.trim().replace(/\s+/g, "");
+  const pass = $("jPass").value;
+  const confirm = $("jConfirm").value;
+
+  if(!inviteKey || !first || !last || !email || !phone || !pass || !confirm){
+    showAlert("joinAlert","All fields are required."); return;
+  }
+  if(!/^\+?\d{10,15}$/.test(phone)){
+    showAlert("joinAlert","Phone must be 10 to 15 digits."); return;
+  }
+  if(pass.length < 8){
+    showAlert("joinAlert","Password must be at least 8 characters."); return;
+  }
+  if(pass !== confirm){
+    showAlert("joinAlert","Passwords do not match."); return;
+  }
+
+  const keySnap = await getDoc(doc(db,"inviteKeys",inviteKey)).catch(()=>null);
+  if(!keySnap?.exists()){
+    showAlert("joinAlert","Invalid invite key."); return;
+  }
+
+  const keyData = keySnap.data() || {};
+  const role = (keyData.role || "").toLowerCase();
+  const exp = keyData.expiresAt?.toDate?.() || null;
+  const isMultiUse = !!keyData.multiUse || Number(keyData.maxUses || 0) > 1;
+  const usedCount = Number(keyData.usedCount || 0);
+  const maxUses = Number(keyData.maxUses || 1);
+
+  if(!ALLOWED_ROLES.has(role)){
+    showAlert("joinAlert","This key is not for admin/manager/worker join."); return;
+  }
+  if(keyData.scope && keyData.scope !== "staff"){
+    showAlert("joinAlert","Invalid key scope."); return;
+  }
+  if(exp && exp < new Date()){
+    showAlert("joinAlert","Invite key expired."); return;
+  }
+  if(!isMultiUse && keyData.usedBy){
+    showAlert("joinAlert","This key has already been used."); return;
+  }
+  if(isMultiUse && usedCount >= maxUses){
+    showAlert("joinAlert","This invite key reached max usage."); return;
+  }
+
+  try{
+    const cred = await createUserWithEmailAndPassword(auth, email, pass);
+    const uid = cred.user.uid;
+    const name = `${first} ${last}`;
+    const tier = ROLE_TIERS[role] || ROLE_TIERS.worker;
+    const refCode = makeReferralCode(role);
+
+    await setDoc(doc(db,"users",uid), {
+      name,
+      inviteKeyUsed: inviteKey,
+      email,
+      phone,
+      role,
+      referralCode: refCode,
+      discountPercent: tier.pct,
+      usedReferralCode: null,
+      referredBy: null,
+      createdAt: serverTimestamp()
+    });
+
+    const nextPay = new Date();
+    nextPay.setMonth(nextPay.getMonth() + 1, 1);
+    nextPay.setHours(0,0,0,0);
+
+    await setDoc(doc(db,"wallets",uid), {
+      available:0,
+      pendingApproval:0,
+      pendingPayout:0,
+      lifetimePaid:0,
+      nextPayDate: nextPay,
+      lastPayDate: null,
+      updatedAt: serverTimestamp()
+    }, { merge:true });
+
+    await setDoc(doc(db,"referralCodes",refCode), {
+      ownerUid: uid,
+      role,
+      discountPercent: tier.pct,
+      timesUsed: 0,
+      createdAt: serverTimestamp()
+    });
+
+    if(isMultiUse){
+      await updateDoc(doc(db,"inviteKeys",inviteKey), {
+        usedCount: increment(1),
+        usedByLast: uid,
+        usedAtLast: serverTimestamp()
+      });
+    } else {
+      await updateDoc(doc(db,"inviteKeys",inviteKey), {
+        usedBy: uid,
+        usedByName: name,
+        usedAt: serverTimestamp()
+      });
+    }
+
+    showAlert("joinAlert","Account created. Redirecting...","ok");
+    setTimeout(()=>window.location.replace(ROLE_DASHBOARD[role] || "admin-dashboard.html"), 500);
+  }catch(e){
+    showAlert("joinAlert", userErr(e.code));
+  }
+});
+</script>
+</body>
+</html>

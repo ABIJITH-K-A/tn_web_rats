@@ -1,4 +1,3 @@
-<!-- index.html (Complete Professional Bootstrap Site) -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,31 +9,58 @@
     <!-- Font Awesome for icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <!-- Custom CSS -->
-    <link href="styles.css" rel="stylesheet">
+    <link href="Statics/styles.css" rel="stylesheet">
+
+<style>
+.neural-background-iframe {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    z-index: 0;
+    pointer-events: none;
+}
+.main-content-wrapper {
+    position: relative;
+    z-index: 2;
+}
+.hero-section {
+    background: rgba(11, 12, 16, 0.8) !important;
+}
+</style>
+
 </head>
 <body>
-    <!-- Navigation -->
+
+<iframe src="neural-bg.html" class="neural-background-iframe"></iframe>
+    
+    <!-- ══ NAVBAR — TN WEB RATS ══ -->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="index.html">
-                <img src="RATTY.png" alt="TN WEB RATS Logo" class="navbar-logo me-2">
+            <a class="navbar-brand d-flex align-items-center" href="index.html" aria-label="TN WEB RATS Home">
+                <img src="RATTY.png" alt="TN WEB RATS Logo" class="navbar-logo me-2" onerror="this.style.display='none'">
                 <span class="brand-text">TN WEB RATS</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="projects.html">Projects</a></li>
-                    <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="book.html">Book Service</a></li>
-                    <li class="nav-item"><a class="nav-link" href="help.html">Help</a></li>
+                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link"        href="services.html">Services</a></li>
+                    <li class="nav-item"><a class="nav-link"        href="projects.html">Projects</a></li>
+                    <li class="nav-item"><a class="nav-link"        href="about.html">About</a></li>
+                    <li class="nav-item"><a class="nav-link"        href="book.html">Book Service</a></li>
+                    <li class="nav-item"><a class="nav-link"        href="help.html">Help</a></li>
+                    <li class="nav-item"><a class="nav-link"        href="signup.html">Sign Up</a></li>
                 </ul>
             </div>
         </div>
     </nav>
-
+    <div class="main-content-wrapper" style="position:relative; z-index:2;">
+    
     <!-- Hero Section -->
     <section class="hero-section">
         <div class="container">
@@ -92,70 +118,64 @@
             <h2 class="section-title text-center mb-5">Our Portfolio</h2>
             <div class="row g-4 portfolio-grid" id="portfolioGrid">
                 <div class="col-lg-4 col-md-6 portfolio-item">
-                    <div class="portfolio-card">
-                        <img src="fitness gym.png" alt="Project 1" class="portfolio-img">
+                    <a href="projects.html" class="portfolio-card" aria-label="View Project 1 Details">
+                        <img src="Images/Project_Preview/Project_Preview_1.png" alt="Project 1" class="portfolio-img">
                         <div class="portfolio-overlay">
                             <div class="portfolio-info">
                                 <h5>Project 1</h5>
-                                <a href="projects.html" class="btn btn-sm btn-cyan">View Details</a>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
                 <div class="col-lg-4 col-md-6 portfolio-item">
-                    <div class="portfolio-card">
-                        <img src="g8.png" alt="Project 2" class="portfolio-img">
+                    <a href="projects.html" class="portfolio-card" aria-label="View Project 2 Details">
+                        <img src="Images/Project_Preview/Project_Preview_2.jpg" alt="Project 2" class="portfolio-img">
                         <div class="portfolio-overlay">
                             <div class="portfolio-info">
                                 <h5>Project 2</h5>
-                                <a href="projects.html" class="btn btn-sm btn-cyan">View Details</a>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
                 <div class="col-lg-4 col-md-6 portfolio-item">
-                    <div class="portfolio-card">
-                        <img src="g7.png" alt="Project 3" class="portfolio-img">
+                    <a href="projects.html" class="portfolio-card" aria-label="View Project 3 Details">
+                        <img src="Images/Project_Preview/Project_Preview_3.png" alt="Project 3" class="portfolio-img">
                         <div class="portfolio-overlay">
                             <div class="portfolio-info">
                                 <h5>Project 3</h5>
-                                <a href="projects.html" class="btn btn-sm btn-cyan">View Details</a>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
                 <div class="col-lg-4 col-md-6 portfolio-item">
-                    <div class="portfolio-card">
-                        <img src="g2.jpg" alt="Project 4" class="portfolio-img">
+                    <a href="projects.html" class="portfolio-card" aria-label="View Project 4 Details">
+                        <img src="Images/Project_Preview/Project_Preview_4.jpg" alt="Project 4" class="portfolio-img">
                         <div class="portfolio-overlay">
                             <div class="portfolio-info">
                                 <h5>Project 4</h5>
-                                <a href="projects.html" class="btn btn-sm btn-cyan">View Details</a>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
                 <div class="col-lg-4 col-md-6 portfolio-item">
-                    <div class="portfolio-card">
-                        <img src="g3.png" alt="Project 5" class="portfolio-img">
+                    <a href="projects.html" class="portfolio-card" aria-label="View Project 5 Details">
+                        <img src="Images/Project_Preview/Project_Preview_5.jpg" alt="Project 5" class="portfolio-img">
                         <div class="portfolio-overlay">
                             <div class="portfolio-info">
                                 <h5>Project 5</h5>
-                                <a href="projects.html" class="btn btn-sm btn-cyan">View Details</a>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
                 <div class="col-lg-4 col-md-6 portfolio-item">
-                    <div class="portfolio-card">
-                        <img src="g4.jpg" alt="Project 6" class="portfolio-img">
+                    <a href="projects.html" class="portfolio-card" aria-label="View Project 6 Details">
+                        <img src="Images/Project_Preview/Project_Preview_6.png" alt="Project 6" class="portfolio-img">
                         <div class="portfolio-overlay">
                             <div class="portfolio-info">
                                 <h5>Project 6</h5>
-                                <a href="projects.html" class="btn btn-sm btn-cyan">View Details</a>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
             </div>
         </div>
@@ -181,7 +201,7 @@
                 <div class="col-lg-4 mb-4">
                     <h6 style="color: #66FCF1;">Contact Info</h6>
                     <div class="contact-item">
-                        <i class="fas fa-envelope me-2"></i> tnwebrats@gmail.com
+                        <i class="fas fa-envelope me-2"></i> <a href="mailto:Example@gmail.com">Example@gmail.com</a>
                     </div>
                     <div class="contact-item">
                         <i class="fab fa-whatsapp me-2"></i> +91 8300920680
@@ -206,9 +226,12 @@
         </div>
     </footer>
 
+    </div><!-- /main-content-wrapper -->
+
     <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="Statics/nav-auth.js"></script>
     <!-- Custom JS -->
-    <script src="script.js"></script>
-</body>
-</html>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="Statics/script.js"></script>

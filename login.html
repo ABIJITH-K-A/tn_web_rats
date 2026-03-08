@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="refresh" content="0;url=signup.html">
+<title>Redirecting…</title>
+</head>
+<body>
+<script>
+// login.html deprecated — auth handled by signup.html (all pages) + book.html modal (booking)
+var r=document.referrer;
+window.location.replace(r&&r.includes('book.html')?'book.html':'signup.html');
+</script>
+</body>
+</html>

@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — TN WEB RATS</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="Statics/admin-dashboard.css">
+</head>
+<body data-dashboard-role="superadmin">
+
+<iframe src="neural-bg.html" class="neural-background-iframe neural-bg"></iframe>
+
+<!-- ── TOP BAR ── -->
+<header class="topbar">
+  <button class="btn-hamburger" id="btnHamburger" aria-label="Toggle menu">
+    <i class="fas fa-bars"></i>
+  </button>
+  <div class="tb-logo">
+    <img src="RATTY.png" alt="logo" onerror="this.style.display='none'">
+    <div class="bname">TN WEB RATS</div>
+  </div>
+  <div class="tb-right">
+    <div class="tb-clock" id="clock"></div>
+    <div class="tb-user d-none d-sm-flex">
+      <span id="tbUserName" class="uname">Loading…</span>
+      <span id="tbUserRole" style="color:var(--teal);font-size:.58rem"></span>
+    </div>
+    <a href="index.html" target="_blank" class="tb-link d-none d-md-flex">
+      <i class="fas fa-external-link-alt"></i> View Site
+    </a>
+    <button class="btn-tb-logout" id="btnLogout" title="Logout">
+      <i class="fas fa-sign-out-alt"></i>
+    </button>
+  </div>
+</header>
+
+<!-- ── OVERLAY (Module 8 req 3) ── -->
+<div class="nav-overlay" id="navOverlay"></div>
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-brand">
+    <img src="RATTY.png" alt="logo" onerror="this.style.display='none'">
+    <div>
+      <div class="bn">TN WEB RATS</div>
+      <div class="br" id="sbRoleLine">Super Admin Portal</div>
+    </div>
+  </div>
+
+  <nav class="sb-nav" id="sbNav">
+    <!-- Shown to all roles -->
+    <div class="sb-section">Overview</div>
+    <a class="sb-link" data-view="overview" data-roles="owner,superadmin,admin,manager,worker">
+      <i class="fas fa-home"></i>Overview
+    </a>
+
+    <!-- Admin/Manager -->
+    <div class="sb-section" data-roles="owner,superadmin,admin,manager">Orders</div>
+    <a class="sb-link" data-view="orders" data-roles="owner,superadmin,admin,manager">
+      <i class="fas fa-list-check"></i>Orders
+      <span class="sb-badge d-none" id="pendingBadge">0</span>
+    </a>
+
+    <!-- Admin only -->
+    <div class="sb-section" data-roles="owner,superadmin,admin">Management</div>
+    <a class="sb-link" data-view="users" data-roles="owner,superadmin,admin">
+      <i class="fas fa-users"></i>Users
+    </a>
+    <a class="sb-link" data-view="referrals" data-roles="owner,superadmin,admin">
+      <i class="fas fa-ticket-alt"></i>Referral Codes
+    </a>
+
+    <!-- All staff -->
+    <div class="sb-section" data-roles="owner,superadmin,admin,manager,worker">Reviews</div>
+    <a class="sb-link" data-view="reviews" data-roles="owner,superadmin,admin,manager,worker">
+      <i class="fas fa-star"></i>Reviews
+    </a>
+
+
+    <!-- Wallet -->
+    <div class="sb-section" data-roles="owner,superadmin,admin,manager,worker">Wallet</div>
+    <a class="sb-link" data-view="wallet" data-roles="owner,superadmin,admin,manager,worker">
+      <i class="fas fa-wallet"></i>Wallet
+    </a>
+
+    <!-- Reports -->
+    <div class="sb-section" data-roles="owner,superadmin,admin,manager,worker">Reports</div>
+    <a class="sb-link" data-view="reports" data-roles="owner,superadmin,admin,manager,worker">
+      <i class="fas fa-bug"></i>Report Issue
+    </a>
+
+    <!-- Samples -->
+    <div class="sb-section" data-roles="owner,superadmin,admin,manager,worker">Samples</div>
+    <a class="sb-link" data-view="samples" data-roles="owner,superadmin,admin,manager,worker">
+      <i class="fas fa-box"></i>Samples
+    </a>
+
+
+    <!-- Payroll: admin sees create+history, manager sees Team Payments -->
+    <div class="sb-section" data-roles="owner,superadmin,admin,manager">Payroll</div>
+    <a class="sb-link" data-view="payroll" data-roles="owner,superadmin,admin">
+      <i class="fas fa-money-bill-wave"></i>Payroll
+    </a>
+    <a class="sb-link" data-view="teampay" data-roles="manager">
+      <i class="fas fa-hand-holding-dollar"></i>Team Payments
+    </a>
+
+
+    <!-- Approvals -->
+    <div class="sb-section" data-roles="owner,superadmin,admin">Approvals</div>
+    <a class="sb-link" data-view="approvals" data-roles="owner,superadmin,admin">
+      <i class="fas fa-check-double"></i>Approvals
+    </a>
+
+
+    <!-- Worker sections -->
+    <div class="sb-section" data-roles="worker">My Work</div>
+    <a class="sb-link" data-view="myorders" data-roles="worker">
+      <i class="fas fa-briefcase"></i>My Orders
+    </a>
+    <a class="sb-link" data-view="earnings" data-roles="worker">
+      <i class="fas fa-wallet"></i>My Earnings
+    </a>
+
+    <!-- Invite Keys — all staff, role-based generation -->
+    <div class="sb-section" data-roles="owner,superadmin,admin,manager">Team</div>
+    <a class="sb-link" data-view="invitekeys" data-roles="owner,superadmin,admin,manager">
+      <i class="fas fa-key"></i>Invite Keys
+    </a>
+  </nav>
+
+  <div class="sb-footer">
+    <div class="sb-user">
+      <div class="sb-av" id="sbAvatar"><i class="fas fa-user"></i></div>
+      <div>
+        <div class="sb-uname" id="sbName">Loading…</div>
+        <div class="sb-urole" id="sbRole">—</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ── MAIN CONTENT ── -->
+<main class="main">
+<div class="content">
+
+<!-- ══════════════════════════════════════════════
+     OVERVIEW
+══════════════════════════════════════════════ -->
+<div class="view-panel" id="view-overview">
+  <div class="panel-header">
+    <div><p class="panel-title">Overview <span>Dashboard</span></p><p class="panel-sub">// live snapshot of your platform</p></div>
+  </div>
+  <div class="stat-grid">
+    <div class="stat-card c1"><div class="stat-icon"><i class="fas fa-inbox"></i></div><div class="stat-num" id="ov-total">—</div><div class="stat-label">Total Orders</div></div>
+    <div class="stat-card c2"><div class="stat-icon"><i class="fas fa-hourglass-half"></i></div><div class="stat-num" id="ov-pending">—</div><div class="stat-label">Pending</div></div>
+    <div class="stat-card c3"><div class="stat-icon"><i class="fas fa-rupee-sign"></i></div><div class="stat-num" id="ov-revenue">₹—</div><div class="stat-label">Revenue</div></div>
+    <div class="stat-card c4"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-num" id="ov-users">—</div><div class="stat-label">Total Users</div></div>
+  </div>
+  <div class="data-card">
+    <div class="data-head"><div class="data-head-title"><i class="fas fa-clock-rotate-left"></i>Recent Orders</div></div>
+    <div class="data-body">
+      <div class="t-wrap"><table class="dash-table" id="ovOrdersTable">
+        <thead><tr><th>Order ID</th><th>Service · Package</th><th>Customer</th><th>Amount</th><th>Status</th><th>Payment</th><th>Date</th></tr></thead>
+        <tbody id="ovOrdersBody"></tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     ORDERS
+══════════════════════════════════════════════ -->
+<div class="view-panel" id="view-orders">
+  <div class="panel-header">
+    <div><p class="panel-title">Orders <span>Management</span></p><p class="panel-sub">// assign workers, update status, track payment</p></div>
+  </div>
+  <div class="toolbar">
+    <div class="search-wrap"><i class="fas fa-search"></i>
+      <input type="text" class="search-inp" id="ordSearch" placeholder="Search by name, ID, service…">
+    </div>
+    <select class="filter-sel" id="ordStatusFilter">
+      <option value="">All Status</option>
+      <option value="pending">Pending</option>
+      <option value="in_progress">In Progress</option>
+      <option value="complete">Complete</option>
+      <option value="cancelled">Cancelled</option>
+    </select>
+    <select class="filter-sel" id="ordSvcFilter">
+      <option value="">All Services</option>
+      <option>PowerPoint Presentations</option>
+      <option>Posters &amp; Graphics</option>
+      <option>Website Development</option>
+    </select>
+  </div>
+  <div class="data-card">
+    <div class="data-head"><div class="data-head-title"><i class="fas fa-table"></i>All Orders</div></div>
+    <div class="data-body">
+      <div class="t-wrap"><table class="dash-table">
+        <thead><tr><th>ID</th><th>Service · Package</th><th>Customer</th><th>Amount</th><th>Payment</th><th>Status</th><th>Worker(s)</th><th>Actions</th></tr></thead>
+        <tbody id="ordersBody"></tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     USERS
+══════════════════════════════════════════════ -->
+<div class="view-panel" id="view-users">
+  <div class="panel-header">
+    <div><p class="panel-title">User <span>Management</span></p><p class="panel-sub">// promote roles, view referral codes</p></div>
+  </div>
+  <div class="toolbar">
+    <div class="search-wrap"><i class="fas fa-search"></i>
+      <input type="text" class="search-inp" id="userSearch" placeholder="Search by name or email…">
+    </div>
+    <select class="filter-sel" id="userRoleFilter">
+      <option value="">All Roles</option>
+      <option value="customer">Customer</option>
+      <option value="worker">Worker</option>
+      <option value="manager">Manager</option>
+      <option value="admin">Admin</option>
+      <option value="superadmin">Super Admin</option>
+      <option value="owner">Owner</option>
+    </select>
+  </div>
+  <div class="data-card">
+    <div class="data-head"><div class="data-head-title"><i class="fas fa-users"></i>All Users</div></div>
+    <div class="data-body">
+      <div class="t-wrap"><table class="dash-table">
+        <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Referral Code</th><th>Discount</th><th>Promote</th></tr></thead>
+        <tbody id="usersBody"></tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     REFERRAL CODES
+══════════════════════════════════════════════ -->
+<div class="view-panel" id="view-referrals">
+  <div class="panel-header">
+    <div><p class="panel-title">Referral <span>Codes</span></p><p class="panel-sub">// all active codes and usage stats</p></div>
+  </div>
+  <div class="data-card">
+    <div class="data-head"><div class="data-head-title"><i class="fas fa-ticket-alt"></i>Active Codes</div></div>
+    <div class="data-body">
+      <div class="t-wrap"><table class="dash-table">
+        <thead><tr><th>Code</th><th>Owner</th><th>Role</th><th>Discount</th><th>Times Used</th><th>Created</th></tr></thead>
+        <tbody id="referralsBody"></tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     REVIEWS
+══════════════════════════════════════════════ -->
+<div class="view-panel" id="view-reviews">
+  <div class="panel-header">
+    <div><p class="panel-title">Customer <span>Reviews</span></p><p class="panel-sub">// ratings and feedback</p></div>
+  </div>
+  <div class="stat-grid">
+    <div class="stat-card c1"><div class="stat-icon"><i class="fas fa-star"></i></div><div class="stat-num" id="rv-total">—</div><div class="stat-label">Total Reviews</div></div>
+    <div class="stat-card c3"><div class="stat-icon"><i class="fas fa-chart-line"></i></div><div class="stat-num" id="rv-avg">—</div><div class="stat-label">Avg Rating</div></div>
+    <div class="stat-card c2"><div class="stat-icon"><i class="fas fa-thumbs-up"></i></div><div class="stat-num" id="rv-hi">—</div><div class="stat-label">4–5 Stars</div></div>
+  </div>
+  <div class="data-card">
+    <div class="data-head"><div class="data-head-title"><i class="fas fa-comment-alt"></i>All Reviews</div></div>
+    <div class="data-body">
+      <div class="t-wrap"><table class="dash-table">
+        <thead><tr><th>Rating</th><th>Comment</th><th>Service</th><th>Date</th></tr></thead>
+        <tbody id="reviewsBody"></tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ??????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
+     WALLET
+?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????? -->
+<div class="view-panel" id="view-wallet" data-roles="owner,superadmin,admin,manager,worker">
+  <div class="panel-header">
+    <div><p class="panel-title">Wallet <span>Balance</span></p><p class="panel-sub">// salary balance, payout requests, next pay</p></div>
+    <button class="btn-ghost" id="btnWalletRefresh"><i class="fas fa-rotate"></i>Refresh</button>
+  </div>
+  <div class="stat-grid">
+    <div class="stat-card c3"><div class="stat-icon"><i class="fas fa-wallet"></i></div><div class="stat-num" id="wallet-available">??????</div><div class="stat-label">Available</div></div>
+    <div class="stat-card c2"><div class="stat-icon"><i class="fas fa-hourglass-half"></i></div><div class="stat-num" id="wallet-pending">??????</div><div class="stat-label">Pending Approval</div></div>
+    <div class="stat-card c1"><div class="stat-icon"><i class="fas fa-calendar"></i></div><div class="stat-num" id="wallet-next">???</div><div class="stat-label">Next Pay</div></div>
+    <div class="stat-card c4"><div class="stat-icon"><i class="fas fa-coins"></i></div><div class="stat-num" id="wallet-life">??????</div><div class="stat-label">Lifetime Paid</div></div>
+  </div>
+  <div class="data-card">
+    <div class="data-head"><div class="data-head-title"><i class="fas fa-calendar-check"></i>Next Pay Timeline</div></div>
+    <div class="data-body">
+      <div class="timeline" id="walletTimeline"></div>
+    </div>
+  </div>
+  <div class="data-card">
+    <div class="data-head"><div class="data-head-title"><i class="fas fa-money-check-alt"></i>Request Payout</div></div>
+    <div class="data-body">
+      <div class="row g-3" style="max-width:560px">
+        <div class="col-md-6">
+          <label class="dash-label">Amount (???) *</label>
+          <input type="number" class="dash-input" id="walletPayoutAmt" min="0" placeholder="e.g. 2500">
+        </div>
+        <div class="col-md-6">
+          <label class="dash-label">Method *</label>
+          <select class="dash-select" id="walletPayoutMethod">
+            <option value="bank">Bank Transfer</option>
+            <option value="upi">UPI</option>
+            <option value="cash">Cash</option>
+          </select>
+        </div>
+        <div class="col-12">
+          <label class="dash-label">Notes (optional)</label>
+          <textarea class="dash-textarea" id="walletPayoutNote" placeholder="UPI ID, bank details, or notes"></textarea>
+        </div>
+        <div class="col-12">
+          <button class="btn-dash" id="btnSubmitPayout"><span class="btn-text-span"><i class="fas fa-hand-holding-dollar"></i>Submit Request</span><span class="btn-loader-span"><i class="fas fa-circle-notch spin"></i>Sending???</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="data-card">
+    <div class="data-head"><div class="data-head-title"><i class="fas fa-list"></i>Payout Requests</div></div>
+    <div class="data-body">
+      <div class="t-wrap"><table class="dash-table">
+        <thead><tr><th>Request ID</th><th>Amount</th><th>Method</th><th>Status</th><th>Created</th></tr></thead>
+        <tbody id="walletPayoutBody"></tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+<!-- ??????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
+     REPORTS
+?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????? -->
+<div class="view-panel" id="view-reports" data-roles="owner,superadmin,admin,manager,worker">
+  <div class="panel-header">
+    <div><p class="panel-title">Reports <span>Center</span></p><p class="panel-sub">// report issues to managers, admins, or superadmins</p></div>
+  </div>
+  <div class="data-card">
+    <div class="data-head"><div class="data-head-title"><i class="fas fa-bug"></i>Create Report</div></div>
+    <div class="data-body">
+      <div class="row g-3" style="max-width:720px">
+        <div class="col-md-4">
+          <label class="dash-label">Send To *</label>
+          <select class="dash-select" id="reportToRole"></select>
+        </div>
+        <div class="col-md-8">
+          <label class="dash-label">Subject *</label>
+          <input type="text" class="dash-input" id="reportSubject" placeholder="Short summary">
+        </div>
+        <div class="col-12">
+          <label class="dash-label">Details *</label>
+          <textarea class="dash-textarea" id="reportDetails" placeholder="Describe the issue, order ID, and any evidence"></textarea>
+        </div>
+        <div class="col-12">
+          <button class="btn-dash" id="btnSubmitReport"><span class="btn-text-span"><i class="fas fa-paper-plane"></i>Submit Report</span><span class="btn-loader-span"><i class="fas fa-circle-notch spin"></i>Sending???</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="data-card">
+    <div class="data-head"><div class="data-head-title"><i class="fas fa-list"></i>My Reports</div></div>
+    <div class="data-body">
+      <div class="t-wrap"><table class="dash-table">
+        <thead><tr><th>ID</th><th>To</th><th>Subject</th><th>Status</th><th>Created</th></tr></thead>
+        <tbody id="myReportsBody"></tbody>
+      </table></div>
+    </div>
+  </div>
+  <div class="data-card" id="reportInboxCard" data-roles="owner,superadmin,admin,manager">
+    <div class="data-head"><div class="data-head-title"><i class="fas fa-inbox"></i>Inbox</div></div>
+    <div class="data-body">
+      <div class="t-wrap"><table class="dash-table">
+        <thead><tr><th>ID</th><th>From</th><th>Subject</th><th>Status</th><th>Created</th></tr></thead>
+        <tbody id="reportInboxBody"></tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+<!-- ??????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
+     SAMPLES
+?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????? -->
+<div class="view-panel" id="view-samples" data-roles="owner,superadmin,admin,manager,worker">
+  <div class="panel-header">
+    <div><p class="panel-title">Samples <span>Exchange</span></p><p class="panel-sub">// send or receive client samples</p></div>
+  </div>
+  <div class="data-card">
+    <div class="data-head"><div class="data-head-title"><i class="fas fa-box"></i>Create Sample Request</div></div>
+    <div class="data-body">
+      <div class="row g-3" style="max-width:760px">
+        <div class="col-md-4">
+          <label class="dash-label">Type *</label>
+          <select class="dash-select" id="sampleType">
+            <option value="send">Send to Client</option>
+            <option value="receive">Receive from Client</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="dash-label">Client Name *</label>
+          <input type="text" class="dash-input" id="sampleClientName" placeholder="Client name">
+        </div>
+        <div class="col-md-4">
+          <label class="dash-label">Client Email *</label>
+          <input type="email" class="dash-input" id="sampleClientEmail" placeholder="client@email.com">
+        </div>
+        <div class="col-md-4">
+          <label class="dash-label">Client Phone</label>
+          <input type="text" class="dash-input" id="sampleClientPhone" placeholder="+91...">
+        </div>
+        <div class="col-md-4">
+          <label class="dash-label">Order ID (optional)</label>
+          <input type="text" class="dash-input" id="sampleOrderId" placeholder="Order ID">
+        </div>
+        <div class="col-md-4">
+          <label class="dash-label">Expected Date</label>
+          <input type="date" class="dash-input" id="sampleDate">
+        </div>
+        <div class="col-12">
+          <label class="dash-label">Notes</label>
+          <textarea class="dash-textarea" id="sampleNotes" placeholder="Tracking details, address, or instructions"></textarea>
+        </div>
+        <div class="col-12">
+          <button class="btn-dash" id="btnSubmitSample"><span class="btn-text-span"><i class="fas fa-paper-plane"></i>Create Request</span><span class="btn-loader-span"><i class="fas fa-circle-notch spin"></i>Saving???</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="data-card">
+    <div class="data-head"><div class="data-head-title"><i class="fas fa-list"></i>Sample Requests</div></div>
+    <div class="data-body">
+      <div class="t-wrap"><table class="dash-table">
+        <thead><tr><th>ID</th><th>Type</th><th>Client</th><th>Status</th><th>Created</th></tr></thead>
+        <tbody id="sampleBody"></tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+<!-- ??????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
+     APPROVALS
+?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????? -->
+<div class="view-panel" id="view-approvals" data-roles="owner,superadmin,admin">
+  <div class="panel-header">
+    <div><p class="panel-title">Approvals <span>Queue</span></p><p class="panel-sub">// payroll runs, payouts, and assignment requests</p></div>
+  </div>
+  <div class="data-card">
+    <div class="data-head"><div class="data-head-title"><i class="fas fa-check-double"></i>Payroll Runs</div></div>
+    <div class="data-body">
+      <div class="t-wrap"><table class="dash-table">
+        <thead><tr><th>Month</th><th>Total</th><th>Approvals</th><th>Status</th><th>Created</th><th>Actions</th></tr></thead>
+        <tbody id="approvalPayrollBody"></tbody>
+      </table></div>
+    </div>
+  </div>
+  <div class="data-card">
+    <div class="data-head"><div class="data-head-title"><i class="fas fa-hand-holding-dollar"></i>Payout Requests</div></div>
+    <div class="data-body">
+      <div class="t-wrap"><table class="dash-table">
+        <thead><tr><th>Worker</th><th>Amount</th><th>Method</th><th>Status</th><th>Created</th><th>Actions</th></tr></thead>
+        <tbody id="approvalPayoutBody"></tbody>
+      </table></div>
+    </div>
+  </div>
+  <div class="data-card">
+    <div class="data-head"><div class="data-head-title"><i class="fas fa-users"></i>Assignment Requests</div></div>
+    <div class="data-body">
+      <div class="t-wrap"><table class="dash-table">
+        <thead><tr><th>Order</th><th>Requested By</th><th>Workers</th><th>Status</th><th>Created</th><th>Actions</th></tr></thead>
+        <tbody id="approvalAssignBody"></tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PAYROLL (admin/superadmin)
+══════════════════════════════════════════════ -->
+<div class="view-panel" id="view-payroll">
+  <div class="panel-header">
+    <div><p class="panel-title">Payroll <span>System</span></p><p class="panel-sub">// create periods, allocate to managers</p></div>
+    <button class="btn-dash" id="btnCreatePayroll"><span class="btn-text-span"><i class="fas fa-plus"></i>New Payroll Period</span></button>
+  </div>
+
+
+  <!-- Auto payroll run -->
+  <div class="data-card" id="autoPayrollCard">
+    <div class="data-head"><div class="data-head-title"><i class="fas fa-robot"></i>Auto Payroll Run (75% worker share)</div></div>
+    <div class="data-body">
+      <div class="row g-3" style="max-width:520px">
+        <div class="col-md-6">
+          <label class="dash-label">Month *</label>
+          <input type="month" id="autoPayMonth" class="dash-input">
+        </div>
+        <div class="col-md-6">
+          <label class="dash-label">Mode *</label>
+          <select class="dash-select" id="autoPayMode">
+            <option value="create">Create Run</option>
+            <option value="preview">Preview Only</option>
+          </select>
+        </div>
+        <div class="col-12">
+          <button class="btn-dash" id="btnGenerateRun"><span class="btn-text-span"><i class="fas fa-cogs"></i>Generate</span><span class="btn-loader-span"><i class="fas fa-circle-notch spin"></i>Working???</span></button>
+        </div>
+      </div>
+      <div class="small" id="autoPaySummary" style="margin-top:14px;font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;color:rgba(197,198,199,.35)"></div>
+    </div>
+  </div>
+
+  <!-- Create form (hidden by default) -->
+  <div class="data-card" id="payrollCreateCard" style="display:none">
+    <div class="data-head"><div class="data-head-title"><i class="fas fa-plus-circle"></i>Create Payroll Period</div></div>
+    <div class="data-body">
+      <div class="row g-3" style="max-width:500px">
+        <div class="col-md-6">
+          <label class="dash-label">Month *</label>
+          <input type="month" id="payMonth" class="dash-input">
+        </div>
+        <div class="col-md-6">
+          <label class="dash-label">Total Income (₹) *</label>
+          <input type="number" id="payIncome" class="dash-input" placeholder="e.g. 50000" min="0">
+        </div>
+        <div class="col-12">
+          <button class="btn-dash" id="btnSavePayroll"><span class="btn-text-span"><i class="fas fa-save"></i>Create Period</span><span class="btn-loader-span"><i class="fas fa-circle-notch spin"></i>Saving…</span></button>
+          <button class="btn-ghost ms-2" id="btnCancelPayroll">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Allocate managers section -->
+  <div class="data-card" id="payAllocCard" style="display:none">
+    <div class="data-head">
+      <div class="data-head-title"><i class="fas fa-hand-holding-dollar"></i>Allocate to Managers — <span id="payAllocPeriod" style="color:var(--teal)"></span></div>
+      <div style="font-family:var(--mono);font-size:.68rem;color:var(--cyan)">Remaining: ₹<span id="payAllocRemaining">0</span></div>
+    </div>
+    <div class="data-body">
+      <div id="managerAllocRows"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:18px;padding-top:16px;border-top:1px solid rgba(102,252,241,.08);flex-wrap:wrap;gap:12px;">
+        <div style="font-family:var(--mono);font-size:.72rem;color:rgba(197,198,199,.45)">Total allocated: ₹<strong id="payAllocTotal" style="color:var(--cyan)">0</strong> / ₹<span id="payAllocMax">0</span></div>
+        <button class="btn-dash" id="btnSubmitAlloc"><span class="btn-text-span"><i class="fas fa-check"></i>Save Allocation</span><span class="btn-loader-span"><i class="fas fa-circle-notch spin"></i>Saving…</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- History table -->
+  <div class="data-card">
+    <div class="data-head"><div class="data-head-title"><i class="fas fa-history"></i>Payroll History</div></div>
+    <div class="data-body">
+      <div class="t-wrap"><table class="dash-table">
+        <thead><tr><th>Month</th><th>Total Income</th><th>Managers Allocated</th><th>Status</th><th>Created</th><th>Actions</th></tr></thead>
+        <tbody id="payrollBody"></tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     TEAM PAYMENTS (manager)
+══════════════════════════════════════════════ -->
+<div class="view-panel" id="view-teampay">
+  <div class="panel-header">
+    <div><p class="panel-title">Team <span>Payments</span></p><p class="panel-sub">// distribute your allocated payroll to workers</p></div>
+  </div>
+  <div class="stat-grid">
+    <div class="stat-card c1"><div class="stat-icon"><i class="fas fa-wallet"></i></div><div class="stat-num" id="tp-allocated">₹—</div><div class="stat-label">Allocated to You</div></div>
+    <div class="stat-card c3"><div class="stat-icon"><i class="fas fa-check-circle"></i></div><div class="stat-num" id="tp-distributed">₹—</div><div class="stat-label">Distributed</div></div>
+    <div class="stat-card c2"><div class="stat-icon"><i class="fas fa-hourglass-half"></i></div><div class="stat-num" id="tp-remaining">₹—</div><div class="stat-label">Remaining</div></div>
+  </div>
+  <div class="data-card">
+    <div class="data-head">
+      <div class="data-head-title"><i class="fas fa-calendar-alt"></i>Select Payroll Period</div>
+    </div>
+    <div class="data-body">
+      <select class="dash-select" id="tpPayrollSel" style="max-width:300px">
+        <option value="">— Select Period —</option>
+      </select>
+    </div>
+  </div>
+  <div id="tpDistributeSection" style="display:none">
+    <div class="data-card">
+      <div class="data-head">
+        <div class="data-head-title"><i class="fas fa-users"></i>Select Workers &amp; Set Pay</div>
+        <div style="font-family:var(--mono);font-size:.68rem;color:var(--cyan)">Total: ₹<span id="tpTotal">0</span> / ₹<span id="tpMax">0</span></div>
+      </div>
+      <div class="data-body" id="tpWorkerRows"></div>
+      <div style="padding:0 22px 20px;display:flex;justify-content:flex-end;gap:12px;flex-wrap:wrap">
+        <button class="btn-dash" id="btnDistribute"><span class="btn-text-span"><i class="fas fa-paper-plane"></i>Submit Distribution</span><span class="btn-loader-span"><i class="fas fa-circle-notch spin"></i>Submitting…</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     MY ORDERS (worker)
+══════════════════════════════════════════════ -->
+<div class="view-panel" id="view-myorders">
+  <div class="panel-header">
+    <div><p class="panel-title">My <span>Orders</span></p><p class="panel-sub">// your assigned projects</p></div>
+  </div>
+  <div class="data-card">
+    <div class="data-head"><div class="data-head-title"><i class="fas fa-briefcase"></i>Assigned to Me</div></div>
+    <div class="data-body">
+      <div class="t-wrap"><table class="dash-table">
+        <thead><tr><th>ID</th><th>Service · Package</th><th>Customer</th><th>Amount</th><th>Status</th><th>Update</th></tr></thead>
+        <tbody id="myOrdersBody"></tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     MY EARNINGS (worker)
+══════════════════════════════════════════════ -->
+<div class="view-panel" id="view-earnings">
+  <div class="panel-header">
+    <div><p class="panel-title">My <span>Earnings</span></p><p class="panel-sub">// pay summary and referral performance</p></div>
+  </div>
+  <div class="stat-grid">
+    <div class="stat-card c3"><div class="stat-icon"><i class="fas fa-coins"></i></div><div class="stat-num" id="earn-pay">₹—</div><div class="stat-label">This Month Pay</div></div>
+    <div class="stat-card c1"><div class="stat-icon"><i class="fas fa-clipboard-check"></i></div><div class="stat-num" id="earn-orders">—</div><div class="stat-label">Orders Done</div></div>
+    <div class="stat-card c2"><div class="stat-icon"><i class="fas fa-star"></i></div><div class="stat-num" id="earn-rating">—</div><div class="stat-label">Avg Rating</div></div>
+    <div class="stat-card c4"><div class="stat-icon"><i class="fas fa-ticket-alt"></i></div><div class="stat-num" id="earn-refs">—</div><div class="stat-label">Referrals</div></div>
+  </div>
+  <div class="data-card">
+    <div class="data-head">
+      <div class="data-head-title"><i class="fas fa-ticket-alt"></i>Your Referral Code</div>
+    </div>
+    <div class="data-body">
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+        <span class="code-box" id="earnRefCode">—</span>
+        <button class="btn-ghost btn-sm" id="btnCopyEarnRef"><i class="fas fa-copy me-1"></i>Copy</button>
+      </div>
+      <p style="font-family:var(--mono);font-size:.6rem;color:rgba(197,198,199,.28);margin-top:10px;letter-spacing:.07em;">
+        Share this code. You earn ₹20 bonus per referral used, applied in your next payroll cycle.
+      </p>
+    </div>
+  </div>
+  <div class="data-card">
+    <div class="data-head"><div class="data-head-title"><i class="fas fa-star"></i>My Reviews</div></div>
+    <div class="data-body">
+      <div class="t-wrap"><table class="dash-table">
+        <thead><tr><th>Rating</th><th>Comment</th><th>Service</th><th>Date</th></tr></thead>
+        <tbody id="earnReviewsBody"></tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     INVITE KEYS
+══════════════════════════════════════════════ -->
+<div class="view-panel" id="view-invitekeys">
+  <div class="panel-header">
+    <div><p class="panel-title">Invite <span>Keys</span></p><p class="panel-sub">// single-use keys for onboarding team members</p></div>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <!-- Role selector: shown for superadmin/admin; hidden for manager -->
+      <select class="filter-sel" id="keyRoleSelect" style="display:none">
+        <option value="worker">Worker</option>
+        <option value="manager">Manager</option>
+        <option value="admin">Admin</option>
+        <option value="superadmin">Super Admin</option>
+      </select>
+      <button class="btn-dash" id="btnGenKey"><span class="btn-text-span"><i class="fas fa-key"></i><span id="genKeyLabel">Generate Key</span></span><span class="btn-loader-span"><i class="fas fa-circle-notch spin"></i>Generating…</span></button>
+    </div>
+  </div>
+  <div class="key-grid" id="keysGrid">
+    <div class="empty-state" style="grid-column:1/-1"><i class="fas fa-key"></i>no keys yet — generate one above</div>
+  </div>
+</div>
+
+</div><!-- /content -->
+</main>
+
+
+<!-- ?????? ASSIGN WORKERS MODAL ?????? -->
+<div class="modal-overlay" id="assignModal">
+  <div class="modal-box modal-wide">
+    <div class="modal-title">Assign Workers</div>
+    <div class="modal-msg" id="assignModalMsg">Select workers for this order.</div>
+    <div class="assign-list" id="assignWorkerList"></div>
+    <div class="assign-hint" id="assignApprovalHint"></div>
+    <div class="modal-btns">
+      <button class="btn-ghost" id="assignCancel">Cancel</button>
+      <button class="btn-dash" id="assignSave"><span class="btn-text-span"><i class="fas fa-check"></i>Save Assignment</span><span class="btn-loader-span"><i class="fas fa-circle-notch spin"></i>Saving???</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- ── CONFIRM MODAL ── -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal-box">
+    <div class="modal-title" id="confirmTitle">Confirm</div>
+    <div class="modal-msg" id="confirmMsg">Are you sure?</div>
+    <div class="modal-btns">
+      <button class="btn-ghost" id="confirmCancel">Cancel</button>
+      <button class="btn-dash" id="confirmOk">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── TOAST ── -->
+<div class="tnwr-toast" id="toast"></div>
+
+<script type="module" src="Statics/admin-dashboard.js"></script>
+</body>
+</html>

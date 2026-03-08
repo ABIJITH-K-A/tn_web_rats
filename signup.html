@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign Up — TN WEB RATS</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="Statics/styles.css" rel="stylesheet">
+<style>
+:root{--bg:#0B0C10;--dark:#1F2833;--gray:#C5C6C7;--cyan:#66FCF1;--teal:#45A29E;--danger:#ff4d6d;--mono:'Share Tech Mono',monospace;--sans:'Rajdhani',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);font-family:var(--sans);color:var(--gray);min-height:100vh;overflow-x:hidden;}
+.neural-background-iframe{position:fixed;inset:0;width:100%;height:100%;border:none;z-index:0;pointer-events:none;}
+
+/* Admin paw trigger — triple click top-left */
+#adminTrigger{position:fixed;top:10px;left:10px;width:36px;height:36px;z-index:9999;background:transparent;border:none;outline:none;padding:0;cursor:default;opacity:.12;transition:opacity .4s;filter:drop-shadow(0 0 4px rgba(102,252,241,.3));}
+#adminTrigger:hover{opacity:.28;}
+#adminTrigger.click1{opacity:.32;filter:drop-shadow(0 0 7px rgba(102,252,241,.55));}
+#adminTrigger.click2{opacity:.62;filter:drop-shadow(0 0 12px rgba(102,252,241,.85));}
+
+.navbar{z-index:100!important;}
+.main-content-wrapper{position:relative;z-index:2;overflow-y:auto;height:100vh;}
+
+/* Hero */
+.signup-hero{padding:130px 0 48px;text-align:center;background:linear-gradient(to bottom,rgba(11,12,16,.65),rgba(11,12,16,.2));}
+.signup-hero .tag{display:inline-block;font-family:var(--mono);font-size:.68rem;letter-spacing:.28em;text-transform:uppercase;color:var(--cyan);border:1px solid rgba(102,252,241,.25);border-radius:20px;padding:6px 18px;margin-bottom:20px;}
+.signup-hero h1{font-size:clamp(1.9rem,4.5vw,3rem);font-weight:700;color:var(--gray);letter-spacing:.06em;}
+.signup-hero h1 span{color:var(--cyan);}
+.signup-hero p{margin-top:10px;color:rgba(197,198,199,.45);font-family:var(--mono);font-size:.82rem;letter-spacing:.08em;}
+
+/* Benefits */
+.benefits{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:600px;margin:0 auto 40px;padding:0 20px;}
+@media(max-width:600px){.benefits{grid-template-columns:1fr;}}
+.benefit{background:rgba(31,40,51,.7);border:1px solid rgba(102,252,241,.09);border-radius:12px;padding:18px 16px;text-align:center;}
+.benefit i{font-size:1.3rem;color:var(--cyan);margin-bottom:10px;display:block;}
+.benefit .bt{font-size:.88rem;font-weight:700;color:var(--gray);margin-bottom:4px;}
+.benefit .bs{font-family:var(--mono);font-size:.62rem;color:rgba(197,198,199,.35);letter-spacing:.05em;line-height:1.6;}
+
+/* Card */
+.signup-card{background:rgba(31,40,51,.88);backdrop-filter:blur(14px);border:1px solid rgba(102,252,241,.11);border-radius:18px;padding:36px 40px;max-width:560px;margin:0 auto 60px;}
+@media(max-width:600px){.signup-card{padding:24px 18px;margin:0 12px 48px;}}
+
+/* Tabs */
+.tab-row{display:grid;grid-template-columns:1fr 1fr;border:1px solid rgba(102,252,241,.12);border-radius:11px;overflow:hidden;margin-bottom:26px;}
+.tab-btn{padding:12px 11px;text-align:center;font-family:var(--sans);font-size:.88rem;font-weight:600;letter-spacing:.04em;cursor:pointer;transition:all .25s;color:rgba(197,198,199,.4);background:rgba(11,12,16,.5);min-height:44px;display:flex;align-items:center;justify-content:center;gap:8px;}
+.tab-btn.active{background:rgba(102,252,241,.08);color:var(--cyan);box-shadow:inset 0 -2px 0 var(--cyan);}
+.tab-btn:hover:not(.active){color:var(--gray);background:rgba(102,252,241,.04);}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;animation:fadeUp .35s ease both;}
+
+/* Fields */
+.field-group{margin-bottom:17px;}
+.field-label{display:block;font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(197,198,199,.38);margin-bottom:6px;transition:color .3s;}
+.field-group:focus-within .field-label{color:var(--cyan);}
+.field-wrap{position:relative;}
+.field-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:rgba(102,252,241,.24);font-size:.82rem;pointer-events:none;transition:color .3s;}
+.ta-wrap .field-icon{top:14px;transform:none;}
+.field-group:focus-within .field-icon{color:var(--cyan);}
+.f-ctrl{width:100%;padding:12px 13px 12px 39px;background:rgba(11,12,16,.72);border:1px solid rgba(102,252,241,.11);border-radius:10px;color:var(--gray);font-family:var(--sans);font-size:.92rem;font-weight:500;transition:border-color .3s,box-shadow .3s;outline:none;min-height:44px;}
+.f-ctrl::placeholder{color:rgba(197,198,199,.16);}
+.f-ctrl:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(102,252,241,.07);background:rgba(11,12,16,.9);}
+.f-ctrl.is-invalid{border-color:var(--danger);}
+select.f-ctrl{cursor:pointer;}
+select.f-ctrl option{background:var(--dark);}
+.pw-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(197,198,199,.24);cursor:pointer;font-size:.82rem;padding:4px;transition:color .2s;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;}
+.pw-eye:hover{color:var(--cyan);}
+.field-err{font-family:var(--mono);font-size:.62rem;letter-spacing:.07em;color:var(--danger);margin-top:4px;display:none;}
+.field-err.show{display:block;}
+
+/* Strength */
+.strength-row{display:flex;align-items:center;gap:10px;margin-top:7px;}
+.s-segs{display:flex;gap:4px;}
+.s-seg{height:3px;width:34px;border-radius:4px;background:rgba(102,252,241,.1);transition:background .3s;}
+.s-seg.lv1{background:#ff4d6d;}
+.s-seg.lv2{background:#ffa94d;}
+.s-seg.lv3{background:#ffd43b;}
+.s-seg.lv4{background:#66FCF1;}
+.s-txt{font-family:var(--mono);font-size:.6rem;color:rgba(197,198,199,.35);letter-spacing:.07em;flex:1;}
+
+/* Terms checkbox */
+.terms-row{display:flex;align-items:flex-start;gap:12px;padding:13px 16px;background:rgba(11,12,16,.45);border:1px solid rgba(102,252,241,.09);border-radius:10px;cursor:pointer;margin-bottom:16px;}
+.t-box{width:20px;height:20px;border:2px solid rgba(102,252,241,.22);border-radius:5px;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.terms-row.checked .t-box{background:var(--cyan);border-color:var(--cyan);}
+.t-box i{color:var(--bg);font-size:.58rem;display:none;}
+.terms-row.checked .t-box i{display:block;}
+.t-txt{font-size:.8rem;color:rgba(197,198,199,.45);line-height:1.55;}
+.t-txt a{color:var(--cyan);text-decoration:none;}
+
+/* Referral feedback */
+.ref-feedback{font-family:var(--mono);font-size:.6rem;letter-spacing:.07em;margin-top:4px;min-height:15px;}
+.ref-feedback.valid{color:var(--cyan);}
+.ref-feedback.invalid{color:var(--danger);}
+.ref-feedback.checking{color:rgba(197,198,199,.35);}
+
+/* Alert */
+.alert-box{padding:12px 16px;border-radius:9px;font-family:var(--mono);font-size:.7rem;letter-spacing:.07em;margin-bottom:16px;display:none;}
+.alert-box.error{background:rgba(255,77,109,.08);border:1px solid rgba(255,77,109,.28);color:var(--danger);}
+.alert-box.success{background:rgba(102,252,241,.07);border:1px solid rgba(102,252,241,.25);color:var(--cyan);}
+.alert-box.show{display:block;}
+
+/* Btn */
+.btn-auth{width:100%;padding:13px;background:linear-gradient(90deg,var(--teal),var(--cyan));border:none;border-radius:10px;color:var(--bg);font-family:var(--sans);font-size:.97rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;position:relative;overflow:hidden;transition:transform .2s,box-shadow .3s;min-height:50px;}
+.btn-auth::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent);transform:translateX(-100%);transition:transform .5s;}
+.btn-auth:hover{transform:translateY(-2px);box-shadow:0 8px 26px rgba(102,252,241,.32);}
+.btn-auth:hover::before{transform:translateX(100%);}
+.btn-auth.loading{pointer-events:none;opacity:.8;}
+.btn-auth.loading .btn-text{display:none;}
+.btn-auth .btn-loader{display:none;align-items:center;gap:8px;justify-content:center;}
+.btn-auth.loading .btn-loader{display:flex;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.spin{animation:spin .7s linear infinite;}
+
+/* Footer */
+.signup-footer{text-align:center;padding:0 0 48px;font-family:var(--mono);font-size:.68rem;color:rgba(197,198,199,.28);letter-spacing:.1em;}
+.signup-footer a{color:var(--cyan);text-decoration:none;}
+.signup-footer a:hover{text-decoration:underline;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+</style>
+</head>
+<body>
+
+<iframe src="neural-bg.html" class="neural-background-iframe"></iframe>
+
+<!-- Hidden admin paw trigger — triple-click to go to admin portal -->
+<button id="adminTrigger" title="" aria-hidden="true">
+  <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="12" cy="9"  rx="3.5" ry="4.5" fill="rgba(102,252,241,.9)"/>
+    <ellipse cx="24" cy="9"  rx="3.5" ry="4.5" fill="rgba(102,252,241,.9)"/>
+    <ellipse cx="7"  cy="18" rx="3"   ry="4"   fill="rgba(102,252,241,.9)"/>
+    <ellipse cx="29" cy="18" rx="3"   ry="4"   fill="rgba(102,252,241,.9)"/>
+    <path d="M9 22 Q18 30 27 22 Q24 32 18 33 Q12 32 9 22Z" fill="rgba(102,252,241,.9)"/>
+  </svg>
+</button>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" href="index.html">
+      <img src="RATTY.png" alt="TN WEB RATS Logo" class="navbar-logo me-2" onerror="this.style.display='none'">
+      <span class="brand-text">TN WEB RATS</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="services.html">Services</a></li>
+        <li class="nav-item"><a class="nav-link" href="book.html">Book Service</a></li>
+        <li class="nav-item"><a class="nav-link" href="help.html">Help</a></li>
+        <!-- Guest state -->
+        <li class="nav-item nav-guest"><a class="nav-link active" href="signup.html">Sign Up</a></li>
+        <!-- Authed state -->
+        <li class="nav-item nav-authed d-none"><a class="nav-link" href="profile.html" style="color:var(--cyan)" id="navUserName">My Profile</a></li>
+        <li class="nav-item nav-authed d-none"><a class="nav-link" href="#" id="navLogout">Logout</a></li>
+        <li class="nav-item nav-staff d-none"><a class="nav-link" href="admin-dashboard.html" style="color:var(--teal)">Dashboard</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="main-content-wrapper">
+
+<!-- HERO -->
+<section class="signup-hero">
+  <div class="container">
+    <div class="tag"><i class="fas fa-bolt me-1"></i>Free Account</div>
+    <h1>Join <span>TN WEB RATS</span></h1>
+    <p>Create an account to track orders, use referral codes &amp; get discounts</p>
+  </div>
+</section>
+
+<!-- BENEFITS -->
+<section class="pb-2">
+  <div class="container">
+    <div class="benefits">
+      <div class="benefit"><i class="fas fa-history"></i><div class="bt">Order Tracking</div><div class="bs">See all your projects &amp; delivery status live</div></div>
+      <div class="benefit"><i class="fas fa-ticket-alt"></i><div class="bt">Referral Discounts</div><div class="bs">Save 5–20% with staff referral codes</div></div>
+      <div class="benefit"><i class="fas fa-star"></i><div class="bt">Leave Reviews</div><div class="bs">Rate projects &amp; help us improve</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- MAIN CARD -->
+<section class="pb-5">
+  <div class="container">
+
+    <div class="signup-card">
+      <!-- Tabs -->
+      <div class="tab-row">
+        <div class="tab-btn active" data-tab="register"><i class="fas fa-user-plus"></i>Create Account</div>
+        <div class="tab-btn"        data-tab="login"   ><i class="fas fa-sign-in-alt"></i>Sign In</div>
+      </div>
+
+      <!-- ── REGISTER TAB ── -->
+      <div class="tab-panel active" id="tabRegister">
+        <div class="alert-box" id="regAlert"></div>
+
+        <div class="row g-3">
+          <div class="col-6">
+            <div class="field-group">
+              <label class="field-label">First name *</label>
+              <div class="field-wrap"><i class="fas fa-user field-icon"></i>
+                <input type="text" id="rFirst" class="f-ctrl" placeholder="Aarav" autocomplete="given-name">
+              </div>
+              <div class="field-err" id="errRFirst"></div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="field-group">
+              <label class="field-label">Last name *</label>
+              <div class="field-wrap"><i class="fas fa-user field-icon"></i>
+                <input type="text" id="rLast" class="f-ctrl" placeholder="Kumar" autocomplete="family-name">
+              </div>
+              <div class="field-err" id="errRLast"></div>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="field-group">
+              <label class="field-label">Email *</label>
+              <div class="field-wrap"><i class="fas fa-envelope field-icon"></i>
+                <input type="email" id="rEmail" class="f-ctrl" placeholder="you@example.com" autocomplete="email">
+              </div>
+              <div class="field-err" id="errREmail"></div>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="field-group">
+              <label class="field-label">WhatsApp / Phone *</label>
+              <div class="field-wrap"><i class="fab fa-whatsapp field-icon"></i>
+                <input type="tel" id="rPhone" class="f-ctrl" placeholder="+91 98765 43210" autocomplete="tel">
+              </div>
+              <div class="field-err" id="errRPhone"></div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="field-group">
+              <label class="field-label">Password *</label>
+              <div class="field-wrap"><i class="fas fa-lock field-icon"></i>
+                <input type="password" id="rPass" class="f-ctrl" placeholder="Min 8 chars" autocomplete="new-password">
+                <button class="pw-eye" id="rEye1" type="button"><i class="fas fa-eye"></i></button>
+              </div>
+              <div class="strength-row">
+                <div class="s-segs">
+                  <div class="s-seg" id="ss1"></div><div class="s-seg" id="ss2"></div>
+                  <div class="s-seg" id="ss3"></div><div class="s-seg" id="ss4"></div>
+                </div>
+                <span class="s-txt" id="sTxt">enter password</span>
+              </div>
+              <div class="field-err" id="errRPass"></div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="field-group">
+              <label class="field-label">Confirm password *</label>
+              <div class="field-wrap"><i class="fas fa-lock field-icon"></i>
+                <input type="password" id="rConfirm" class="f-ctrl" placeholder="Repeat password" autocomplete="new-password">
+                <button class="pw-eye" id="rEye2" type="button"><i class="fas fa-eye"></i></button>
+              </div>
+              <div class="field-err" id="errRConfirm"></div>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="field-group">
+              <label class="field-label">Referral Code <span style="opacity:.35">(optional)</span></label>
+              <div class="field-wrap"><i class="fas fa-ticket-alt field-icon"></i>
+                <input type="text" id="rReferral" class="f-ctrl" placeholder="TNWR-XXX-XXXX" style="text-transform:uppercase" autocomplete="off">
+              </div>
+              <div class="ref-feedback" id="refFb"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="terms-row" id="termsRow">
+          <div class="t-box"><i class="fas fa-check"></i></div>
+          <div class="t-txt">I agree to the <a href="help.html">Terms of Service</a> and understand TN WEB RATS may contact me via the provided details.</div>
+        </div>
+        <div class="field-err" id="errTerms" style="margin-top:-10px;margin-bottom:12px"></div>
+
+        <button class="btn-auth" id="btnRegister">
+          <span class="btn-text"><i class="fas fa-user-plus me-2"></i>Create Account</span>
+          <span class="btn-loader"><i class="fas fa-circle-notch spin"></i>&nbsp;Creating…</span>
+        </button>
+      </div><!-- /tabRegister -->
+
+      <!-- ── LOGIN TAB ── -->
+      <div class="tab-panel" id="tabLogin">
+        <div class="alert-box" id="loginAlert"></div>
+
+        <div class="field-group">
+          <label class="field-label">Email</label>
+          <div class="field-wrap"><i class="fas fa-envelope field-icon"></i>
+            <input type="email" id="lEmail" class="f-ctrl" placeholder="you@example.com" autocomplete="email">
+          </div>
+          <div class="field-err" id="errLEmail"></div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Password</label>
+          <div class="field-wrap"><i class="fas fa-lock field-icon"></i>
+            <input type="password" id="lPass" class="f-ctrl" placeholder="Your password" autocomplete="current-password">
+            <button class="pw-eye" id="lEye" type="button"><i class="fas fa-eye"></i></button>
+          </div>
+          <div class="field-err" id="errLPass"></div>
+        </div>
+
+        <button class="btn-auth" id="btnLogin">
+          <span class="btn-text"><i class="fas fa-sign-in-alt me-2"></i>Sign In</span>
+          <span class="btn-loader"><i class="fas fa-circle-notch spin"></i>&nbsp;Signing in…</span>
+        </button>
+      </div><!-- /tabLogin -->
+
+    </div><!-- /signup-card -->
+
+    <div class="signup-footer">
+      <a href="index.html">← Back to home</a>
+      &nbsp;·&nbsp;
+      <a href="book.html">Book a service</a>
+    </div>
+  </div>
+</section>
+
+</div><!-- /main-content-wrapper -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="Statics/script.js"></script>
+
+<script type="module">
+/* ═══════════════════════════════════════════════════════
+   CONFIG
+═══════════════════════════════════════════════════════ */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBf1c5bC31M0m5PVX67QsyeiOIS-0acRkI",
+  authDomain: "unofficial-webrats.firebaseapp.com",
+  projectId: "unofficial-webrats",
+  storageBucket: "unofficial-webrats.firebasestorage.app",
+  messagingSenderId: "378552539429",
+  appId: "1:378552539429:web:e4cf876e5b65c9fd4ee2cc",
+  measurementId: "G-JYSYHTJKD7"
+};
+
+const { initializeApp }                         = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+const { getAuth, createUserWithEmailAndPassword,
+        signInWithEmailAndPassword, signOut,
+        onAuthStateChanged }                    = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
+const { getFirestore, doc, getDoc, setDoc,
+        updateDoc, collection, serverTimestamp }= await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+
+const app  = initializeApp(FIREBASE_CONFIG);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+const STAFF = ["worker","manager","admin","superadmin"];
+
+/* ── Auth state ──────────────────────────────────────── */
+onAuthStateChanged(auth, async user => {
+  if (!user) return;
+  const snap = await getDoc(doc(db,"users",user.uid)).catch(()=>null);
+  const ud   = snap?.data();
+  document.querySelectorAll(".nav-guest").forEach(e=>e.classList.add("d-none"));
+  document.querySelectorAll(".nav-authed").forEach(e=>e.classList.remove("d-none"));
+  const uname = document.getElementById("navUserName");
+  if (uname) uname.textContent = ud?.name?.split(" ")[0] || "My Profile";
+  if (ud && STAFF.includes(ud.role)) {
+    document.querySelectorAll(".nav-staff").forEach(e=>e.classList.remove("d-none"));
+  }
+});
+
+document.getElementById("navLogout")?.addEventListener("click", async e=>{
+  e.preventDefault();
+  await signOut(auth);
+  window.location.reload();
+});
+
+/* ── Tab switching ───────────────────────────────────── */
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const tab = btn.dataset.tab;
+    document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+    document.querySelectorAll(".tab-panel").forEach(p=>p.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById("tab"+tab.charAt(0).toUpperCase()+tab.slice(1))?.classList.add("active");
+  });
+});
+
+// Open login tab if URL has ?login=1
+if (new URLSearchParams(location.search).get("login") === "1") {
+  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+  document.querySelectorAll(".tab-panel").forEach(p=>p.classList.remove("active"));
+  document.querySelector('[data-tab="login"]')?.classList.add("active");
+  document.getElementById("tabLogin")?.classList.add("active");
+}
+
+/* ── Password toggles ────────────────────────────────── */
+[["rEye1","rPass"],["rEye2","rConfirm"],["lEye","lPass"]].forEach(([eid,fid])=>{
+  document.getElementById(eid)?.addEventListener("click",function(){
+    const inp=document.getElementById(fid),ico=this.querySelector("i");
+    inp.type=inp.type==="password"?"text":"password";
+    ico.className=inp.type==="password"?"fas fa-eye":"fas fa-eye-slash";
+  });
+});
+
+/* ── Strength meter ──────────────────────────────────── */
+const sTxts=["too short — min 8 chars","add uppercase & numbers","getting stronger","strong password ✓"];
+document.getElementById("rPass")?.addEventListener("input",calcStrength);
+function calcStrength(){
+  const pw=document.getElementById("rPass").value;
+  let sc=0;
+  if(pw.length>=8)sc++;if(/[A-Z]/.test(pw))sc++;if(/[0-9]/.test(pw))sc++;if(/[^A-Za-z0-9]/.test(pw))sc++;
+  ["lv1","lv2","lv3","lv4"].forEach((cls,i)=>{
+    const s=document.getElementById("ss"+(i+1));
+    if(s){s.className="s-seg"+(i<sc?" "+cls:"");}
+  });
+  const el=document.getElementById("sTxt");
+  if(el)el.textContent=pw?sTxts[Math.max(sc-1,0)]:"enter password";
+  return sc;
+}
+
+/* ── Terms ───────────────────────────────────────────── */
+let termsOK=false;
+document.getElementById("termsRow")?.addEventListener("click",()=>{
+  termsOK=!termsOK;
+  document.getElementById("termsRow").classList.toggle("checked",termsOK);
+  if(termsOK)document.getElementById("errTerms").classList.remove("show");
+});
+
+/* ── Referral code live validation ───────────────────── */
+let _refT;
+document.getElementById("rReferral")?.addEventListener("input",function(){
+  clearTimeout(_refT);
+  const code=this.value.trim().toUpperCase();
+  const fb=document.getElementById("refFb");
+  if(!code){fb.textContent="";fb.className="ref-feedback";return;}
+  fb.textContent="checking…";fb.className="ref-feedback checking";
+  _refT=setTimeout(async()=>{
+    const r=await _validateRefCode(code);
+    fb.textContent=(r.valid?"✓ ":"✗ ")+r.message;
+    fb.className="ref-feedback "+(r.valid?"valid":"invalid");
+  },600);
+});
+
+async function _validateRefCode(code){
+  try{
+    const snap=await getDoc(doc(db,"referralCodes",code));
+    if(!snap.exists())return{valid:false,message:"invalid referral code"};
+    const d=snap.data();
+    const ownerSnap=await getDoc(doc(db,"users",d.ownerUid));
+    if(ownerSnap.exists()&&ownerSnap.data().role==="customer")
+      return{valid:false,message:"this code cannot be used"};
+    return{valid:true,ownerUid:d.ownerUid,discountPercent:d.discountPercent,timesUsed:d.timesUsed||0,message:`${d.discountPercent}% discount unlocked!`};
+  }catch(e){return{valid:false,message:"couldn't validate — try again"};}
+}
+
+/* ── Helpers ─────────────────────────────────────────── */
+const _gv=id=>document.getElementById(id)?.value||"";
+function ferr(id,msg,show){const e=document.getElementById(id);if(e){if(msg)e.textContent=msg;e.classList.toggle("show",show);}}
+function finv(id,show){document.getElementById(id)?.classList.toggle("is-invalid",show);}
+function showAlert(alertId,msg,type="error"){const a=document.getElementById(alertId);if(a){a.className="alert-box "+type+" show";a.innerHTML=msg;}}
+function _fbErr(code){return({"auth/email-already-in-use":"email already registered — sign in instead","auth/invalid-email":"enter a valid email address","auth/weak-password":"password must be 8+ characters","auth/user-not-found":"no account found","auth/wrong-password":"incorrect password","auth/too-many-requests":"too many attempts — try later","auth/invalid-credential":"invalid email or password"})[code]||"something went wrong";}
+
+/* ── REGISTER ────────────────────────────────────────── */
+document.getElementById("btnRegister")?.addEventListener("click",async function(){
+  let ok=true;
+  const first=_gv("rFirst").trim(),last=_gv("rLast").trim();
+  const email=_gv("rEmail").trim().toLowerCase();
+  const phone=_gv("rPhone").trim().replace(/\s/g,"");
+  const pass=_gv("rPass"),confirm=_gv("rConfirm");
+  const code=_gv("rReferral").trim().toUpperCase();
+
+  if(!first){ferr("errRFirst","// required",true);finv("rFirst",true);ok=false;}else{ferr("errRFirst","",false);finv("rFirst",false);}
+  if(!last){ferr("errRLast","// required",true);finv("rLast",true);ok=false;}else{ferr("errRLast","",false);finv("rLast",false);}
+  if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ferr("errREmail","valid email required",true);finv("rEmail",true);ok=false;}else{ferr("errREmail","",false);finv("rEmail",false);}
+  if(!phone||!/^\+?\d{10,15}$/.test(phone)){ferr("errRPhone","valid phone required",true);finv("rPhone",true);ok=false;}else{ferr("errRPhone","",false);finv("rPhone",false);}
+  if(pass.length<8){ferr("errRPass","min 8 chars required",true);finv("rPass",true);ok=false;}else{ferr("errRPass","",false);finv("rPass",false);}
+  if(pass!==confirm){ferr("errRConfirm","passwords do not match",true);finv("rConfirm",true);ok=false;}else{ferr("errRConfirm","",false);finv("rConfirm",false);}
+  if(!termsOK){ferr("errTerms","please accept terms to continue",true);ok=false;}
+  if(!ok)return;
+
+  // Validate referral code if entered
+  let refData=null;
+  if(code){
+    refData=await _validateRefCode(code);
+    if(!refData.valid){showAlert("regAlert","// "+refData.message);return;}
+  }
+
+  this.classList.add("loading");this.disabled=true;
+  try{
+    const{user}=await createUserWithEmailAndPassword(auth,email,pass);
+    await setDoc(doc(db,"users",user.uid),{
+      name:first+" "+last,email,phone,role:"customer",
+      referralCode:null,usedReferralCode:code||null,
+      referredBy:refData?.ownerUid||null,
+      discountPercent:refData?.discountPercent||0,
+      createdAt:serverTimestamp()
+    });
+    if(refData&&code){
+      await updateDoc(doc(db,"referralCodes",code),{timesUsed:(refData.timesUsed||0)+1}).catch(()=>{});
+    }
+    showAlert("regAlert",`account created! welcome, <strong>${first}</strong> 🎉 Redirecting…`,"success");
+    setTimeout(()=>window.location.href="profile.html",1800);
+  }catch(e){showAlert("regAlert","// "+_fbErr(e.code));}
+  this.classList.remove("loading");this.disabled=false;
+});
+
+/* ── LOGIN ───────────────────────────────────────────── */
+document.getElementById("btnLogin")?.addEventListener("click",doLogin);
+document.addEventListener("keydown",e=>{
+  if(e.key==="Enter"&&document.getElementById("tabLogin")?.classList.contains("active"))doLogin();
+});
+
+async function doLogin(){
+  const email=_gv("lEmail").trim().toLowerCase();
+  const pass=_gv("lPass");
+  let ok=true;
+  if(!email){ferr("errLEmail","email required",true);finv("lEmail",true);ok=false;}else{ferr("errLEmail","",false);finv("lEmail",false);}
+  if(!pass){ferr("errLPass","password required",true);finv("lPass",true);ok=false;}else{ferr("errLPass","",false);finv("lPass",false);}
+  if(!ok)return;
+
+  const btn=document.getElementById("btnLogin");
+  btn.classList.add("loading");btn.disabled=true;
+  try{
+    const{user}=await signInWithEmailAndPassword(auth,email,pass);
+    const snap=await getDoc(doc(db,"users",user.uid));
+    const ud=snap?.data();
+    // Staff → go to dashboard, Customer → go to profile
+    if(ud&&STAFF.includes(ud.role)){
+      window.location.replace("admin-dashboard.html");
+    }else{
+      const ret=new URLSearchParams(location.search).get("return")||"profile.html";
+      window.location.replace(ret);
+    }
+  }catch(e){
+    showAlert("loginAlert","// "+_fbErr(e.code));
+    finv("lEmail",true);finv("lPass",true);
+  }
+  btn.classList.remove("loading");btn.disabled=false;
+}
+
+/* ── Clear invalid on input ──────────────────────────── */
+["rFirst","rLast","rEmail","rPhone","rPass","rConfirm","lEmail","lPass"].forEach(id=>{
+  document.getElementById(id)?.addEventListener("input",function(){this.classList.remove("is-invalid");});
+});
+
+/* ── Admin trigger — triple click ────────────────────── */
+let _clicks=0,_ct;
+document.getElementById("adminTrigger")?.addEventListener("click",function(){
+  _clicks++;this.className="";
+  if(_clicks===1)this.classList.add("click1");
+  if(_clicks===2)this.classList.add("click2");
+  clearTimeout(_ct);
+  if(_clicks>=3){_clicks=0;this.className="";window.location.href="admin-signup.html";}
+  else{_ct=setTimeout(()=>{_clicks=0;this.className="";},2000);}
+});
+</script>
+</body>
+</html>

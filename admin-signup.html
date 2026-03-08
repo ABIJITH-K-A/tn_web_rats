@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Staff Sign Up — TN WEB RATS</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0B0C10;--dark:#1F2833;--gray:#C5C6C7;--cyan:#66FCF1;--teal:#45A29E;--danger:#ff4d6d;--mono:'Share Tech Mono',monospace;--sans:'Rajdhani',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);font-family:var(--sans);color:var(--gray);min-height:100vh;display:flex;align-items:center;justify-content:center;overflow-x:hidden;}
+.neural-background-iframe{position:fixed;inset:0;width:100%;height:100%;border:none;z-index:0;pointer-events:none;}
+.scanlines{position:fixed;inset:0;z-index:1;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.025) 2px,rgba(0,0,0,.025) 4px);pointer-events:none;}
+
+.wrap{position:relative;z-index:10;width:100%;max-width:520px;padding:20px;}
+.brand-row{text-align:center;margin-bottom:36px;}
+.brand-row img{width:50px;height:50px;border-radius:50%;border:2px solid var(--cyan);box-shadow:0 0 18px rgba(102,252,241,.3);margin-bottom:12px;}
+.brand-row .bname{font-family:var(--mono);font-size:.82rem;color:var(--cyan);letter-spacing:.2em;text-transform:uppercase;}
+.brand-row .bsub{font-family:var(--mono);font-size:.6rem;color:rgba(197,198,199,.3);letter-spacing:.16em;margin-top:3px;}
+
+/* ── STEP PROGRESS ── */
+.steps-row{display:flex;align-items:center;margin-bottom:32px;}
+.step{display:flex;align-items:center;gap:8px;flex:1;}
+.step-dot{width:28px;height:28px;border-radius:50%;border:2px solid rgba(102,252,241,.2);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.65rem;color:rgba(197,198,199,.3);flex-shrink:0;transition:all .3s;}
+.step.active .step-dot{border-color:var(--cyan);color:var(--cyan);background:rgba(102,252,241,.08);}
+.step.done .step-dot{border-color:var(--cyan);background:var(--cyan);color:var(--bg);}
+.step-label{font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(197,198,199,.3);}
+.step.active .step-label{color:var(--gray);}
+.step-line{flex:1;height:1px;background:rgba(102,252,241,.1);margin:0 8px;}
+.step.done + .step-line,.step.done + * + .step-line{background:rgba(102,252,241,.3);}
+
+/* ── CARD ── */
+.card{background:rgba(31,40,51,.9);backdrop-filter:blur(16px);border:1px solid rgba(102,252,241,.12);border-radius:18px;padding:38px 36px;}
+@media(max-width:480px){.card{padding:26px 20px;}}
+.card-title{font-size:1.35rem;font-weight:700;color:var(--gray);letter-spacing:.05em;margin-bottom:4px;}
+.card-title span{color:var(--cyan);}
+.card-sub{font-family:var(--mono);font-size:.64rem;color:rgba(197,198,199,.35);letter-spacing:.1em;margin-bottom:28px;}
+
+/* ── KEY BANNER (shown after valid key) ── */
+.key-banner{padding:14px 18px;background:rgba(102,252,241,.06);border:1px solid rgba(102,252,241,.22);border-radius:10px;display:none;margin-bottom:22px;}
+.key-banner.show{display:flex;align-items:center;gap:12px;}
+.kb-icon{font-size:1.1rem;color:var(--cyan);flex-shrink:0;}
+.kb-role{font-family:var(--mono);font-size:.7rem;color:var(--cyan);letter-spacing:.1em;text-transform:uppercase;}
+.kb-note{font-family:var(--mono);font-size:.6rem;color:rgba(197,198,199,.38);margin-top:2px;letter-spacing:.06em;}
+
+/* ── FIELDS ── */
+.field-group{margin-bottom:17px;}
+.field-label{display:block;font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(197,198,199,.38);margin-bottom:6px;transition:color .3s;}
+.field-group:focus-within .field-label{color:var(--cyan);}
+.field-wrap{position:relative;}
+.field-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:rgba(102,252,241,.22);font-size:.82rem;pointer-events:none;transition:color .3s;}
+.field-group:focus-within .field-icon{color:var(--cyan);}
+.f-ctrl{width:100%;padding:12px 13px 12px 39px;background:rgba(11,12,16,.75);border:1px solid rgba(102,252,241,.11);border-radius:10px;color:var(--gray);font-family:var(--sans);font-size:.92rem;font-weight:500;transition:border-color .3s,box-shadow .3s;outline:none;min-height:44px;}
+.f-ctrl::placeholder{color:rgba(197,198,199,.16);}
+.f-ctrl:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(102,252,241,.07);background:rgba(11,12,16,.92);}
+.f-ctrl.is-invalid{border-color:var(--danger);}
+.f-ctrl:disabled{opacity:.4;cursor:not-allowed;}
+.pw-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(197,198,199,.24);cursor:pointer;font-size:.82rem;padding:4px;transition:color .2s;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;}
+.pw-eye:hover{color:var(--cyan);}
+.field-err{font-family:var(--mono);font-size:.6rem;color:var(--danger);margin-top:4px;display:none;}
+.field-err.show{display:block;}
+
+/* Key validation feedback */
+.key-feedback{font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;margin-top:5px;min-height:15px;}
+.key-feedback.valid{color:var(--cyan);}
+.key-feedback.invalid{color:var(--danger);}
+.key-feedback.checking{color:rgba(197,198,199,.3);}
+
+/* ── STRENGTH ── */
+.strength-row{display:flex;align-items:center;gap:10px;margin-top:7px;}
+.s-segs{display:flex;gap:4px;}
+.s-seg{height:3px;width:34px;border-radius:4px;background:rgba(102,252,241,.08);transition:background .3s;}
+.s-seg.lv1{background:#ff4d6d;}.s-seg.lv2{background:#ffa94d;}.s-seg.lv3{background:#ffd43b;}.s-seg.lv4{background:#66FCF1;}
+.s-txt{font-family:var(--mono);font-size:.6rem;color:rgba(197,198,199,.3);letter-spacing:.07em;flex:1;}
+
+/* ── ALERT ── */
+.alert-box{padding:12px 16px;border-radius:9px;font-family:var(--mono);font-size:.7rem;letter-spacing:.07em;margin-bottom:16px;display:none;}
+.alert-box.error{background:rgba(255,77,109,.08);border:1px solid rgba(255,77,109,.28);color:var(--danger);}
+.alert-box.success{background:rgba(102,252,241,.07);border:1px solid rgba(102,252,241,.25);color:var(--cyan);}
+.alert-box.show{display:block;}
+
+/* ── BUTTON ── */
+.btn-auth{width:100%;padding:14px;background:linear-gradient(90deg,var(--teal),var(--cyan));border:none;border-radius:10px;color:var(--bg);font-family:var(--sans);font-size:1rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;position:relative;overflow:hidden;transition:transform .2s,box-shadow .3s;min-height:50px;}
+.btn-auth::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.16),transparent);transform:translateX(-100%);transition:transform .5s;}
+.btn-auth:hover{transform:translateY(-2px);box-shadow:0 8px 26px rgba(102,252,241,.32);}
+.btn-auth:hover::before{transform:translateX(100%);}
+.btn-auth.loading{pointer-events:none;opacity:.8;}
+.btn-auth.loading .btn-text{display:none;}
+.btn-auth .btn-loader{display:none;align-items:center;gap:8px;justify-content:center;}
+.btn-auth.loading .btn-loader{display:flex;}
+.btn-auth:disabled:not(.loading){opacity:.35;pointer-events:none;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.spin{animation:spin .7s linear infinite;}
+
+/* ── SUCCESS SCREEN ── */
+.success-screen{display:none;text-align:center;padding:20px 0;}
+.success-screen.show{display:block;}
+.s-ring{width:80px;height:80px;border-radius:50%;border:2px solid var(--cyan);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:2rem;color:var(--cyan);box-shadow:0 0 28px rgba(102,252,241,.25);animation:pulse 2s ease infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 20px rgba(102,252,241,.25);}50%{box-shadow:0 0 40px rgba(102,252,241,.45);}}
+.s-name{font-size:1.4rem;font-weight:700;color:var(--gray);letter-spacing:.04em;}
+.s-role{font-family:var(--mono);font-size:.72rem;color:var(--cyan);letter-spacing:.14em;text-transform:uppercase;margin-top:4px;}
+.s-msg{font-family:var(--mono);font-size:.7rem;color:rgba(197,198,199,.38);letter-spacing:.08em;margin-top:12px;line-height:1.8;}
+.btn-goto{margin-top:22px;display:inline-flex;align-items:center;gap:8px;padding:13px 28px;background:linear-gradient(90deg,var(--teal),var(--cyan));border:none;border-radius:10px;color:var(--bg);font-family:var(--sans);font-size:.9rem;font-weight:700;letter-spacing:.1em;cursor:pointer;transition:transform .2s,box-shadow .3s;min-height:48px;}
+.btn-goto:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(102,252,241,.3);}
+.login-divider{height:1px;background:rgba(102,252,241,.12);margin:24px 0 16px;}
+.owner-login-title{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(197,198,199,.38);margin-bottom:10px;}
+
+.footer-link{text-align:center;margin-top:20px;font-family:var(--mono);font-size:.65rem;color:rgba(197,198,199,.28);letter-spacing:.08em;}
+.footer-link a{color:var(--cyan);text-decoration:none;}
+</style>
+</head>
+<body>
+
+<iframe src="neural-bg.html" class="neural-background-iframe"></iframe>
+<div class="scanlines"></div>
+
+<div class="wrap">
+  <div class="brand-row">
+    <img src="RATTY.png" alt="TN WEB RATS" onerror="this.style.display='none'">
+    <div class="bname">TN WEB RATS</div>
+    <div class="bsub">staff onboarding</div>
+  </div>
+
+  <!-- Step progress -->
+  <div class="steps-row">
+    <div class="step active" id="stp1">
+      <div class="step-dot" id="dot1">1</div>
+      <div class="step-label">Invite Key</div>
+    </div>
+    <div class="step-line"></div>
+    <div class="step" id="stp2">
+      <div class="step-dot" id="dot2">2</div>
+      <div class="step-label">Create Account</div>
+    </div>
+    <div class="step-line"></div>
+    <div class="step" id="stp3">
+      <div class="step-dot" id="dot3">3</div>
+      <div class="step-label">Done</div>
+    </div>
+  </div>
+
+  <div class="card">
+
+    <!-- ── SUCCESS ── -->
+    <div class="success-screen" id="successScreen">
+      <div class="s-ring"><i class="fas fa-check"></i></div>
+      <div class="s-name" id="successName">Welcome!</div>
+      <div class="s-role" id="successRole">—</div>
+      <div class="s-msg">Your account is ready.<br>You can now access the staff dashboard.</div>
+      <button class="btn-goto" id="btnGoDash">
+        <i class="fas fa-tachometer-alt"></i> Go to Dashboard
+      </button>
+    </div>
+
+    <!-- ── STEP 1 — INVITE KEY ── -->
+    <div id="step1">
+      <div class="card-title">Enter Invite <span>Key</span></div>
+      <div class="card-sub"> required · get this from your manager or admin</div>
+
+      <div class="alert-box" id="keyAlert"></div>
+
+      <div class="field-group">
+        <label class="field-label">Invite Key *</label>
+        <div class="field-wrap">
+          <i class="fas fa-key field-icon"></i>
+          <input type="text" id="inviteKey" class="f-ctrl" placeholder="TNWR-XXXX-XXXX-XXXX"
+            style="text-transform:uppercase;letter-spacing:.12em;font-family:var(--mono)" autocomplete="off">
+        </div>
+        <div class="key-feedback" id="keyFb"></div>
+      </div>
+
+      <button class="btn-auth" id="btnVerifyKey" disabled>
+        <span class="btn-text"><i class="fas fa-arrow-right me-2"></i>Verify Key</span>
+        <span class="btn-loader"><i class="fas fa-circle-notch spin"></i>&nbsp;Verifying…</span>
+      </button>
+    </div>
+
+    <!-- ── STEP 2 — CREATE ACCOUNT ── -->
+    <div id="step2" style="display:none">
+      <div class="card-title">Create <span>Account</span></div>
+      <div class="card-sub" id="step2Sub">// fill in your details below</div>
+
+      <div class="key-banner" id="keyBanner">
+        <i class="fas fa-shield-halved kb-icon"></i>
+        <div>
+          <div class="kb-role" id="bannerRole">—</div>
+          <div class="kb-note" id="bannerNote">key validated · role auto-assigned</div>
+        </div>
+      </div>
+
+      <div class="alert-box" id="regAlert"></div>
+
+      <div class="row g-3">
+        <div class="col-6">
+          <div class="field-group">
+            <label class="field-label">First name *</label>
+            <div class="field-wrap"><i class="fas fa-user field-icon"></i>
+              <input type="text" id="rFirst" class="f-ctrl" placeholder="Aarav" autocomplete="given-name">
+            </div>
+            <div class="field-err" id="errFirst"></div>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="field-group">
+            <label class="field-label">Last name *</label>
+            <div class="field-wrap"><i class="fas fa-user field-icon"></i>
+              <input type="text" id="rLast" class="f-ctrl" placeholder="Kumar" autocomplete="family-name">
+            </div>
+            <div class="field-err" id="errLast"></div>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="field-group">
+            <label class="field-label">Email *</label>
+            <div class="field-wrap"><i class="fas fa-envelope field-icon"></i>
+              <input type="email" id="rEmail" class="f-ctrl" placeholder="you@tnwebrats.com" autocomplete="email">
+            </div>
+            <div class="field-err" id="errEmail"></div>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="field-group">
+            <label class="field-label">Phone *</label>
+            <div class="field-wrap"><i class="fas fa-phone field-icon"></i>
+              <input type="tel" id="rPhone" class="f-ctrl" placeholder="+91 98765 43210" autocomplete="tel">
+            </div>
+            <div class="field-err" id="errPhone"></div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="field-group">
+            <label class="field-label">Password *</label>
+            <div class="field-wrap"><i class="fas fa-lock field-icon"></i>
+              <input type="password" id="rPass" class="f-ctrl" placeholder="Min 8 chars" autocomplete="new-password">
+              <button class="pw-eye" id="pEye1" type="button"><i class="fas fa-eye"></i></button>
+            </div>
+            <div class="strength-row">
+              <div class="s-segs">
+                <div class="s-seg" id="ss1"></div><div class="s-seg" id="ss2"></div>
+                <div class="s-seg" id="ss3"></div><div class="s-seg" id="ss4"></div>
+              </div>
+              <span class="s-txt" id="sTxt">enter password</span>
+            </div>
+            <div class="field-err" id="errPass"></div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="field-group">
+            <label class="field-label">Confirm *</label>
+            <div class="field-wrap"><i class="fas fa-lock field-icon"></i>
+              <input type="password" id="rConfirm" class="f-ctrl" placeholder="Repeat password" autocomplete="new-password">
+              <button class="pw-eye" id="pEye2" type="button"><i class="fas fa-eye"></i></button>
+            </div>
+            <div class="field-err" id="errConfirm"></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:6px">
+        <button class="btn-auth" style="width:44px;flex-shrink:0;background:rgba(31,40,51,.8);border:1px solid rgba(102,252,241,.15);color:var(--gray)" id="btnBack" type="button">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+        <button class="btn-auth" id="btnRegister">
+          <span class="btn-text"><i class="fas fa-user-plus me-2"></i>Create Staff Account</span>
+          <span class="btn-loader"><i class="fas fa-circle-notch spin"></i>&nbsp;Creating…</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="login-divider"></div>
+    <div id="ownerLoginBox">
+      <div class="owner-login-title">Already onboarded as owner / superadmin? Sign in</div>
+      <div class="alert-box" id="ownerLoginAlert"></div>
+      <div class="field-group">
+        <label class="field-label">Login Email *</label>
+        <div class="field-wrap">
+          <i class="fas fa-envelope field-icon"></i>
+          <input type="email" id="oEmail" class="f-ctrl" placeholder="owner@tnwebrats.com" autocomplete="email">
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Password *</label>
+        <div class="field-wrap">
+          <i class="fas fa-lock field-icon"></i>
+          <input type="password" id="oPass" class="f-ctrl" placeholder="Password" autocomplete="current-password">
+        </div>
+      </div>
+      <button class="btn-auth" id="btnOwnerLogin" type="button">
+        <span class="btn-text"><i class="fas fa-right-to-bracket me-2"></i>Sign In (Owner/Superadmin)</span>
+        <span class="btn-loader"><i class="fas fa-circle-notch spin"></i>&nbsp;Signing in...</span>
+      </button>
+    </div>
+
+  </div><!-- /card -->
+
+  <div class="footer-link">
+    <a href="admin-dashboard.html">← Back to dashboard</a>
+    &nbsp;·&nbsp;
+    <a href="join.html">Join (Admin/Manager/Worker)</a>
+    &nbsp;·&nbsp;
+    <a href="index.html">View site</a>
+  </div>
+</div>
+
+<script type="module">
+/* ═══════════════════════════════════════════════════════════
+   CONFIG
+═══════════════════════════════════════════════════════════ */
+const FIREBASE_CONFIG = {
+apiKey: "AIzaSyBf1c5bC31M0m5PVX67QsyeiOIS-0acRkI",
+  authDomain: "unofficial-webrats.firebaseapp.com",
+  projectId: "unofficial-webrats",
+  storageBucket: "unofficial-webrats.firebasestorage.app",
+  messagingSenderId: "378552539429",
+  appId: "1:378552539429:web:e4cf876e5b65c9fd4ee2cc",
+  measurementId: "G-JYSYHTJKD7"
+};
+
+const { initializeApp }                          = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+const { getAuth, createUserWithEmailAndPassword,
+        signInWithEmailAndPassword, signOut,
+        onAuthStateChanged }                     = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
+const { getFirestore, doc, getDoc, setDoc,
+        updateDoc, serverTimestamp }             = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+
+const app  = initializeApp(FIREBASE_CONFIG);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+const STAFF_ROLES = ["worker","manager","admin","superadmin","owner"];
+const ROLE_DASHBOARD = {
+  owner: "owner-dashboard.html",
+  superadmin: "superadmin-dashboard.html",
+  admin: "admin-dashboard.html",
+  manager: "manager-dashboard.html",
+  worker: "worker-dashboard.html"
+};
+
+/* If already authed as staff, redirect straight to dashboard */
+onAuthStateChanged(auth, async user => {
+  if (!user) return;
+  const snap = await getDoc(doc(db,"users",user.uid)).catch(()=>null);
+  if (snap?.exists() && STAFF_ROLES.includes(snap.data().role)) {
+    const role = snap.data().role;
+    window.location.replace(ROLE_DASHBOARD[role] || "admin-dashboard.html");
+  }
+});
+
+/* Referral code tier map */
+const ROLE_TIERS = {
+  worker:     { code:"WRK", pct: 5 },
+  manager:    { code:"MGR", pct:10 },
+  admin:      { code:"ADM", pct:15 },
+  superadmin: { code:"SAD", pct:20 }
+};
+
+/* ── State ─────────────────────────────────────────────── */
+let _validatedKey  = null;  // invite key string
+let _keyData       = null;  // Firestore data from /inviteKeys/{key}
+
+/* ── Helpers ───────────────────────────────────────────── */
+const _q  = id => document.getElementById(id);
+const _gv = id => _q(id)?.value || "";
+function ferr(id, msg, show){ const e=_q(id); if(e){if(msg)e.textContent=msg; e.classList.toggle("show",show);} }
+function finv(id, show)     { _q(id)?.classList.toggle("is-invalid", show); }
+function showAlert(boxId, msg, type="error"){
+  const a=_q(boxId); if(!a)return;
+  a.className="alert-box "+type+" show"; a.textContent=msg;
+}
+function _fbErr(code){
+  return({"auth/email-already-in-use":"email already registered","auth/invalid-email":"enter a valid email","auth/weak-password":"password is too weak","auth/too-many-requests":"too many attempts — try later"})[code]||"something went wrong";
+}
+
+/* ── Key input debounce ─────────────────────────────────── */
+let _kTimer;
+_q("inviteKey").addEventListener("input", function() {
+  const v = this.value.trim().toUpperCase();
+  this.value = v;
+  _q("btnVerifyKey").disabled = v.length < 10;
+  _q("keyFb").textContent = "";
+  _q("keyFb").className = "key-feedback";
+  clearTimeout(_kTimer);
+  if (v.length >= 14) {
+    _q("keyFb").textContent = "checking…";
+    _q("keyFb").className = "key-feedback checking";
+    _kTimer = setTimeout(() => _checkKey(v), 500);
+  }
+});
+
+async function _checkKey(key) {
+  try {
+    const snap = await getDoc(doc(db,"inviteKeys",key));
+    if (!snap.exists()) {
+      _q("keyFb").textContent = "✗ invalid key";
+      _q("keyFb").className = "key-feedback invalid";
+      _q("btnVerifyKey").disabled = true;
+      return;
+    }
+    const d = snap.data();
+    const exp = d.expiresAt?.toDate?.() || null;
+    if (exp && exp < new Date()) {
+      _q("keyFb").textContent = "? key expired";
+      _q("keyFb").className = "key-feedback invalid";
+      _q("btnVerifyKey").disabled = true;
+      return;
+    }
+    if (d.scope && d.scope !== "staff") {
+      _q("keyFb").textContent = "? invalid key scope";
+      _q("keyFb").className = "key-feedback invalid";
+      _q("btnVerifyKey").disabled = true;
+      return;
+    }
+    if (d.usedBy) {
+      _q("keyFb").textContent = "✗ this key has already been used";
+      _q("keyFb").className = "key-feedback invalid";
+      _q("btnVerifyKey").disabled = true;
+      return;
+    }
+    _q("keyFb").textContent = `✓ valid ${d.role} key`;
+    _q("keyFb").className = "key-feedback valid";
+    _q("btnVerifyKey").disabled = false;
+  } catch(e) {
+    _q("keyFb").textContent = "couldn't verify — check connection";
+    _q("keyFb").className = "key-feedback invalid";
+  }
+}
+
+/* ── Verify key → move to step 2 ───────────────────────── */
+_q("btnVerifyKey").addEventListener("click", async function() {
+  const key =_gv("inviteKey").trim().toUpperCase();
+  if (!key) { showAlert("keyAlert","enter your invite key"); return; }
+  this.classList.add("loading");
+  try {
+    const snap = await getDoc(doc(db,"inviteKeys",key));
+    if (!snap.exists() || snap.data().usedBy) {
+      showAlert("keyAlert", snap.exists() ? "this key has already been used" : "invalid invite key");
+      this.classList.remove("loading"); return;
+    }
+    const kd = snap.data();
+    const exp = kd.expiresAt?.toDate?.() || null;
+    if (exp && exp < new Date()) {
+      showAlert("keyAlert", "invite key expired");
+      this.classList.remove("loading"); return;
+    }
+    if (kd.scope && kd.scope !== "staff") {
+      showAlert("keyAlert", "invalid key scope");
+      this.classList.remove("loading"); return;
+    }
+    _validatedKey = key;
+    _keyData      = kd;
+    /* Show step 2 */
+    _q("step1").style.display = "none";
+    _q("step2").style.display = "block";
+    /* Step indicators */
+    _q("stp1").classList.remove("active"); _q("stp1").classList.add("done");
+    _q("dot1").innerHTML = '<i class="fas fa-check" style="font-size:.55rem"></i>';
+    _q("stp2").classList.add("active");
+    /* Key banner */
+    _q("bannerRole").textContent = (_keyData.role||"worker").charAt(0).toUpperCase()+(_keyData.role||"worker").slice(1)+" Role";
+    _q("bannerNote").textContent = `key from ${_keyData.createdByName||"your admin"} · single use`;
+    _q("keyBanner").classList.add("show");
+    _q("step2Sub").textContent = `// creating a ${_keyData.role} account`;
+  } catch(e) {
+    showAlert("keyAlert","error verifying key — check connection");
+  }
+  this.classList.remove("loading");
+});
+
+/* ── Back button ────────────────────────────────────────── */
+_q("btnBack").addEventListener("click", () => {
+  _q("step1").style.display = "block";
+  _q("step2").style.display = "none";
+  _q("stp1").classList.add("active"); _q("stp1").classList.remove("done");
+  _q("dot1").textContent = "1";
+  _q("stp2").classList.remove("active");
+  _validatedKey = null; _keyData = null;
+});
+
+/* ── Password eyes ─────────────────────────────────────── */
+[["pEye1","rPass"],["pEye2","rConfirm"]].forEach(([eid,fid]) => {
+  _q(eid)?.addEventListener("click", function(){
+    const inp=_q(fid), ico=this.querySelector("i");
+    inp.type = inp.type==="password"?"text":"password";
+    ico.className = inp.type==="password"?"fas fa-eye":"fas fa-eye-slash";
+  });
+});
+
+/* ── Strength ──────────────────────────────────────────── */
+_q("rPass")?.addEventListener("input", () => {
+  const pw=_gv("rPass"); let sc=0;
+  if(pw.length>=8)sc++;if(/[A-Z]/.test(pw))sc++;if(/[0-9]/.test(pw))sc++;if(/[^A-Za-z0-9]/.test(pw))sc++;
+  ["lv1","lv2","lv3","lv4"].forEach((cls,i)=>{const s=_q("ss"+(i+1));if(s)s.className="s-seg"+(i<sc?" "+cls:"");});
+  const txts=["too short","add uppercase & numbers","getting stronger","strong password ✓"];
+  const el=_q("sTxt"); if(el)el.textContent=pw?txts[Math.max(sc-1,0)]:"enter password";
+});
+
+/* ── Register ──────────────────────────────────────────── */
+_q("btnRegister").addEventListener("click", async function() {
+  if (!_validatedKey || !_keyData) { showAlert("regAlert","key no longer valid — go back"); return; }
+
+  let ok = true;
+  const first   = _gv("rFirst").trim();
+  const last    = _gv("rLast").trim();
+  const email   = _gv("rEmail").trim().toLowerCase();
+  const phone   = _gv("rPhone").trim().replace(/\s/g,"");
+  const pass    = _gv("rPass");
+  const confirm = _gv("rConfirm");
+
+  if(!first){ferr("errFirst","required",true);finv("rFirst",true);ok=false;}else{ferr("errFirst","",false);finv("rFirst",false);}
+  if(!last) {ferr("errLast","required",true); finv("rLast",true); ok=false;}else{ferr("errLast","",false);finv("rLast",false);}
+  if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ferr("errEmail","valid email required",true);finv("rEmail",true);ok=false;}else{ferr("errEmail","",false);finv("rEmail",false);}
+  if(!phone||!/^\+?\d{10,15}$/.test(phone)){ferr("errPhone","valid phone required",true);finv("rPhone",true);ok=false;}else{ferr("errPhone","",false);finv("rPhone",false);}
+  if(pass.length<8){ferr("errPass","min 8 chars",true);finv("rPass",true);ok=false;}else{ferr("errPass","",false);finv("rPass",false);}
+  if(pass!==confirm){ferr("errConfirm","passwords do not match",true);finv("rConfirm",true);ok=false;}else{ferr("errConfirm","",false);finv("rConfirm",false);}
+  if(!ok) return;
+
+  this.classList.add("loading"); this.disabled = true;
+  try {
+    const role = _keyData.role || "worker";
+    const name = first + " " + last;
+
+    /* 1. Create Firebase Auth user */
+    const { user } = await createUserWithEmailAndPassword(auth, email, pass);
+
+    /* 2. Generate referral code for staff */
+    const tier = ROLE_TIERS[role] || ROLE_TIERS.worker;
+    const seg  = () => Math.random().toString(36).toUpperCase().slice(2,6).padEnd(4,"X");
+    const refCode = `TNWR-${tier.code}-${seg()}`;
+
+    /* 3. Create user doc */
+    await setDoc(doc(db,"users",user.uid), {
+      name, email, phone, role,
+      inviteKeyUsed: _validatedKey,
+      referralCode: refCode,
+      discountPercent: tier.pct,
+      usedReferralCode: null,
+      referredBy: null,
+      createdAt: serverTimestamp()
+    });
+
+    /* 3b. Create wallet for staff */
+    const nextPay = new Date();
+    nextPay.setMonth(nextPay.getMonth()+1,1);
+    nextPay.setHours(0,0,0,0);
+    await setDoc(doc(db,"wallets",user.uid), {
+      available:0,
+      pendingApproval:0,
+      pendingPayout:0,
+      lifetimePaid:0,
+      nextPayDate: nextPay,
+      lastPayDate: null,
+      updatedAt: serverTimestamp()
+    }, { merge:true });
+
+    /* 4. Create referral code doc */
+    await setDoc(doc(db,"referralCodes",refCode), {
+      ownerUid: user.uid, role, discountPercent: tier.pct,
+      timesUsed: 0, createdAt: serverTimestamp()
+    });
+
+    /* 5. Mark invite key as used */
+    await updateDoc(doc(db,"inviteKeys",_validatedKey), {
+      usedBy: user.uid, usedByName: name,
+      usedAt: serverTimestamp()
+    });
+
+    /* 6. Show success */
+    _q("stp2").classList.remove("active"); _q("stp2").classList.add("done");
+    _q("dot2").innerHTML = '<i class="fas fa-check" style="font-size:.55rem"></i>';
+    _q("stp3").classList.add("done");
+    _q("dot3").innerHTML = '<i class="fas fa-check" style="font-size:.55rem"></i>';
+    _q("step2").style.display = "none";
+    _q("successName").textContent = "Welcome, " + first + "!";
+    _q("successRole").textContent = role.toUpperCase() + " ACCOUNT CREATED";
+    const target = ROLE_DASHBOARD[role] || "admin-dashboard.html";
+    _q("btnGoDash").onclick = () => window.location.href = target;
+    _q("successScreen").classList.add("show");
+
+  } catch(e) {
+    showAlert("regAlert", "// " + _fbErr(e.code));
+  }
+  this.classList.remove("loading"); this.disabled = false;
+});
+
+/* Owner / superadmin login option */
+_q("btnOwnerLogin")?.addEventListener("click", async function(){
+  const email = _gv("oEmail").trim().toLowerCase();
+  const pass  = _gv("oPass");
+  if(!email || !pass){ showAlert("ownerLoginAlert","email and password required"); return; }
+
+  this.classList.add("loading");
+  try{
+    const { user } = await signInWithEmailAndPassword(auth, email, pass);
+    const snap = await getDoc(doc(db,"users",user.uid)).catch(()=>null);
+    const role = (snap?.data()?.role || "").toLowerCase();
+    if(role === "owner" || role === "superadmin"){
+      window.location.replace(ROLE_DASHBOARD[role] || "admin-dashboard.html");
+      return;
+    }
+    await signOut(auth).catch(()=>{});
+    showAlert("ownerLoginAlert","this login is only for owner/superadmin");
+  }catch(e){
+    showAlert("ownerLoginAlert","// " + _fbErr(e.code));
+  }
+  this.classList.remove("loading");
+});
+
+/* Clear invalid on input */
+["rFirst","rLast","rEmail","rPhone","rPass","rConfirm","oEmail","oPass"].forEach(id => {
+  _q(id)?.addEventListener("input", () => _q(id)?.classList.remove("is-invalid"));
+});
+</script>
+</body>
+</html>

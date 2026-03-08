@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Profile — TN WEB RATS</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="Statics/styles.css" rel="stylesheet">
+<style>
+:root{--bg:#0B0C10;--dark:#1F2833;--gray:#C5C6C7;--cyan:#66FCF1;--teal:#45A29E;--danger:#ff4d6d;--mono:'Share Tech Mono',monospace;--sans:'Rajdhani',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);font-family:var(--sans);color:var(--gray);min-height:100vh;overflow-x:hidden;}
+.neural-background-iframe{position:fixed;inset:0;width:100%;height:100%;border:none;z-index:0;pointer-events:none;transform:scale(1.3);}
+.navbar{z-index:100!important;}
+.main-content-wrapper{position:relative;z-index:2;overflow-y:auto;height:100vh;}
+
+/* ── PROFILE HERO ── */
+.profile-hero{padding:120px 0 40px;background:linear-gradient(to bottom,rgba(11,12,16,.7),rgba(11,12,16,.15));}
+.avatar-ring{width:88px;height:88px;border-radius:50%;border:2px solid var(--cyan);background:rgba(102,252,241,.08);display:flex;align-items:center;justify-content:center;font-size:2.2rem;color:var(--cyan);margin:0 auto 18px;position:relative;box-shadow:0 0 32px rgba(102,252,241,.18);}
+.avatar-ring .edit-avatar{position:absolute;bottom:2px;right:2px;width:26px;height:26px;background:var(--cyan);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--bg);font-size:.6rem;cursor:pointer;transition:transform .2s;}
+.avatar-ring .edit-avatar:hover{transform:scale(1.15);}
+.profile-name{font-size:1.7rem;font-weight:700;color:var(--gray);letter-spacing:.04em;text-align:center;}
+.profile-email{font-family:var(--mono);font-size:.7rem;color:rgba(197,198,199,.38);letter-spacing:.12em;text-align:center;margin-top:4px;}
+.role-badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.62rem;padding:4px 12px;border-radius:20px;text-transform:uppercase;background:rgba(102,252,241,.07);color:var(--cyan);border:1px solid rgba(102,252,241,.18);margin-top:10px;}
+
+/* ── TABS ── */
+.profile-nav{display:flex;gap:0;border-bottom:1px solid rgba(102,252,241,.1);margin-bottom:28px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.p-tab{padding:13px 22px;font-family:var(--mono);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(197,198,199,.38);cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:all .2s;display:flex;align-items:center;gap:8px;min-height:44px;}
+.p-tab:hover{color:var(--gray);}
+.p-tab.active{color:var(--cyan);border-bottom-color:var(--cyan);}
+.p-panel{display:none;}
+.p-panel.active{display:block;animation:fadeUp .35s ease both;}
+
+/* ── SECTION CARD ── */
+.section-card{background:rgba(31,40,51,.82);border:1px solid rgba(102,252,241,.09);border-radius:16px;overflow:hidden;margin-bottom:24px;}
+.section-head{padding:16px 24px;background:rgba(102,252,241,.04);border-bottom:1px solid rgba(102,252,241,.07);display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.section-head h3{font-family:var(--mono);font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--cyan);display:flex;align-items:center;gap:10px;margin:0;}
+.section-body{padding:22px 24px;}
+@media(max-width:576px){.section-body{padding:18px 16px;}.section-head{padding:14px 16px;}}
+
+/* ── STAT CARDS ── */
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:22px;}
+.stat-c{background:rgba(22,32,42,.8);border:1px solid rgba(102,252,241,.08);border-radius:12px;padding:16px 18px;transition:border-color .3s;}
+.stat-c:hover{border-color:rgba(102,252,241,.22);}
+.stat-c .sv{font-size:1.7rem;font-weight:700;color:var(--cyan);font-family:var(--mono);line-height:1;}
+.stat-c .sk{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(197,198,199,.35);margin-top:5px;}
+
+/* ── ORDERS TABLE ── */
+.orders-table{width:100%;border-collapse:collapse;min-width:520px;}
+.orders-table th{font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(197,198,199,.32);padding:8px 14px;border-bottom:1px solid rgba(102,252,241,.08);text-align:left;}
+.orders-table td{padding:12px 14px;border-bottom:1px solid rgba(102,252,241,.05);vertical-align:middle;font-size:.86rem;}
+.orders-table tr:last-child td{border-bottom:none;}
+.orders-table tr:hover td{background:rgba(102,252,241,.025);}
+.o-table-wrap{overflow-x:auto;}
+.s-pill{display:inline-block;font-family:var(--mono);font-size:.58rem;padding:3px 9px;border-radius:20px;text-transform:uppercase;}
+.sp-pending    {background:rgba(255,193,7,.1); color:#ffc107;border:1px solid rgba(255,193,7,.22);}
+.sp-in_progress{background:rgba(13,202,240,.1);color:#0dcaf0;border:1px solid rgba(13,202,240,.22);}
+.sp-complete   {background:rgba(102,252,241,.1);color:var(--cyan);border:1px solid rgba(102,252,241,.22);}
+.sp-cancelled  {background:rgba(220,53,69,.08);color:#ff6b7a;border:1px solid rgba(220,53,69,.18);}
+.sp-paid       {background:rgba(105,219,124,.1);color:#69db7c;border:1px solid rgba(105,219,124,.22);}
+.sp-unpaid     {background:rgba(255,169,77,.1); color:#ffa94d;border:1px solid rgba(255,169,77,.22);}
+
+/* ── REFERRAL BOX ── */
+.ref-box{background:rgba(11,12,16,.6);border:1px solid rgba(102,252,241,.18);border-radius:12px;padding:20px 22px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;}
+.ref-code{font-family:var(--mono);font-size:1.1rem;color:var(--cyan);letter-spacing:.18em;}
+.ref-tier{font-family:var(--mono);font-size:.6rem;color:rgba(197,198,199,.38);letter-spacing:.1em;text-transform:uppercase;margin-top:4px;}
+.btn-copy-ref{display:flex;align-items:center;gap:8px;padding:10px 20px;background:rgba(102,252,241,.08);border:1px solid rgba(102,252,241,.22);border-radius:8px;color:var(--cyan);font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;cursor:pointer;transition:all .25s;min-height:44px;}
+.btn-copy-ref:hover{background:rgba(102,252,241,.15);}
+.ref-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:16px;}
+.ref-stat{text-align:center;padding:12px;background:rgba(31,40,51,.7);border:1px solid rgba(102,252,241,.07);border-radius:10px;}
+.ref-stat .rv{font-size:1.5rem;font-weight:700;color:var(--cyan);font-family:var(--mono);}
+.ref-stat .rk{font-family:var(--mono);font-size:.58rem;color:rgba(197,198,199,.35);letter-spacing:.1em;text-transform:uppercase;margin-top:4px;}
+.no-ref-box{padding:24px;text-align:center;font-family:var(--mono);font-size:.68rem;color:rgba(197,198,199,.28);letter-spacing:.12em;line-height:1.9;}
+.no-ref-box i{font-size:1.8rem;color:rgba(102,252,241,.1);margin-bottom:12px;display:block;}
+
+/* ── PROFILE FORM ── */
+.field-group{margin-bottom:18px;}
+.field-label{display:block;font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(197,198,199,.38);margin-bottom:6px;transition:color .3s;}
+.field-group:focus-within .field-label{color:var(--cyan);}
+.field-wrap{position:relative;}
+.field-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:rgba(102,252,241,.24);font-size:.82rem;pointer-events:none;}
+.field-group:focus-within .field-icon{color:var(--cyan);}
+.f-ctrl{width:100%;padding:11px 13px 11px 38px;background:rgba(11,12,16,.72);border:1px solid rgba(102,252,241,.11);border-radius:10px;color:var(--gray);font-family:var(--sans);font-size:.92rem;font-weight:500;transition:border-color .3s;outline:none;min-height:44px;}
+.f-ctrl:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(102,252,241,.07);}
+.f-ctrl::placeholder{color:rgba(197,198,199,.18);}
+.f-ctrl:disabled{opacity:.45;cursor:not-allowed;}
+.btn-save{display:inline-flex;align-items:center;gap:9px;padding:12px 26px;background:linear-gradient(90deg,var(--teal),var(--cyan));border:none;border-radius:10px;color:var(--bg);font-family:var(--sans);font-size:.92rem;font-weight:700;letter-spacing:.08em;cursor:pointer;transition:transform .2s,box-shadow .3s;min-height:44px;}
+.btn-save:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(102,252,241,.28);}
+.btn-save.loading{opacity:.7;pointer-events:none;}
+.btn-save .btn-text{display:flex;align-items:center;gap:8px;}
+.btn-save .btn-loader{display:none;align-items:center;gap:8px;}
+.btn-save.loading .btn-text{display:none;}
+.btn-save.loading .btn-loader{display:flex;}
+.btn-danger{display:inline-flex;align-items:center;gap:9px;padding:11px 24px;background:rgba(255,77,109,.08);border:1px solid rgba(255,77,109,.25);border-radius:10px;color:var(--danger);font-family:var(--sans);font-size:.88rem;font-weight:600;letter-spacing:.06em;cursor:pointer;transition:all .2s;min-height:44px;}
+.btn-danger:hover{background:rgba(255,77,109,.15);}
+
+/* ── PW SECTION ── */
+.pw-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(197,198,199,.24);cursor:pointer;font-size:.82rem;padding:4px;transition:color .2s;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;}
+.pw-eye:hover{color:var(--cyan);}
+
+/* ── TOAST ── */
+.tnwr-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(120%);background:rgba(15,17,23,.97);border:1px solid rgba(102,252,241,.18);color:var(--gray);padding:11px 24px;border-radius:100px;font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;z-index:9999;transition:transform .35s;pointer-events:none;white-space:nowrap;}
+.tnwr-toast.show{transform:translateX(-50%) translateY(0);}
+.tnwr-toast.ok{border-color:rgba(102,252,241,.5);color:var(--cyan);}
+.tnwr-toast.err{border-color:rgba(220,53,69,.5);color:#ff6b7a;}
+
+/* ── EMPTY STATE ── */
+.empty-state{text-align:center;padding:40px 20px;font-family:var(--mono);font-size:.65rem;letter-spacing:.12em;color:rgba(197,198,199,.22);text-transform:uppercase;line-height:2;}
+.empty-state i{font-size:2.2rem;color:rgba(102,252,241,.1);margin-bottom:14px;display:block;}
+
+/* ── DANGER ZONE ── */
+.danger-section{border:1px solid rgba(255,77,109,.15);border-radius:12px;padding:20px 22px;background:rgba(255,77,109,.03);}
+
+.wallet-timeline{display:grid;gap:10px;margin-top:12px;}
+.wallet-item{background:rgba(22,32,42,.7);border:1px solid rgba(102,252,241,.08);padding:12px 14px;border-radius:10px;}
+.wallet-item .wt-title{font-size:.78rem;font-weight:700;color:var(--gray);}
+.wallet-item .wt-sub{font-family:var(--mono);font-size:.58rem;color:rgba(197,198,199,.35);letter-spacing:.08em;margin-top:4px;}
+
+footer{background:rgba(11,12,16,.95);border-top:1px solid rgba(102,252,241,.07);}
+@keyframes spin{to{transform:rotate(360deg);}}
+.spin{animation:spin .7s linear infinite;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+</style>
+</head>
+<body>
+
+<iframe src="neural-bg.html" class="neural-background-iframe"></iframe>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" href="index.html">
+      <img src="RATTY.png" alt="TN WEB RATS Logo" class="navbar-logo me-2" onerror="this.style.display='none'">
+      <span class="brand-text">TN WEB RATS</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="book.html">Book Service</a></li>
+        <li class="nav-item"><a class="nav-link active" href="profile.html">My Profile</a></li>
+        <li class="nav-item"><a class="nav-link" href="help.html">Help</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" id="navLogout">Logout</a></li>
+        <li class="nav-item nav-staff d-none"><a class="nav-link" href="admin-dashboard.html" style="color:var(--teal)">Dashboard</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="main-content-wrapper">
+
+<!-- HERO -->
+<section class="profile-hero">
+  <div class="container text-center">
+    <div class="avatar-ring" id="avatarRing">
+      <span id="avatarInitials">?</span>
+    </div>
+    <div class="profile-name" id="profileName">Loading…</div>
+    <div class="profile-email" id="profileEmail">—</div>
+    <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:10px;">
+      <span class="role-badge"><i class="fas fa-user"></i><span id="profileRole">customer</span></span>
+      <span class="role-badge" style="background:rgba(69,162,158,.07);color:var(--teal);border-color:rgba(69,162,158,.22);">
+        <i class="fas fa-tag"></i><span id="profileDiscount">0%</span> discount active
+      </span>
+    </div>
+  </div>
+</section>
+
+<!-- MAIN CONTENT -->
+<section class="py-4">
+<div class="container" style="max-width:880px">
+
+  <!-- NAV TABS -->
+  <div class="profile-nav">
+    <div class="p-tab active" data-ptab="orders"  ><i class="fas fa-list"></i>My Orders</div>
+    <div class="p-tab"        data-ptab="referral" ><i class="fas fa-ticket-alt"></i>Referral</div>
+    <div class="p-tab d-none" id="tabWallet" data-ptab="wallet"><i class="fas fa-wallet"></i>Wallet</div>
+    <div class="p-tab"        data-ptab="settings" ><i class="fas fa-user-edit"></i>Edit Profile</div>
+    <div class="p-tab"        data-ptab="security" ><i class="fas fa-shield-alt"></i>Security</div>
+  </div>
+
+  <!-- ══════════════════════ ORDERS ══════════════════════ -->
+  <div class="p-panel active" id="panel-orders">
+    <!-- Stats -->
+    <div class="stat-row">
+      <div class="stat-c"><div class="sv" id="statTotal">0</div><div class="sk">Total Orders</div></div>
+      <div class="stat-c"><div class="sv" id="statActive">0</div><div class="sk">In Progress</div></div>
+      <div class="stat-c"><div class="sv" id="statDone">0</div><div class="sk">Completed</div></div>
+      <div class="stat-c"><div class="sv" id="statSpend">₹0</div><div class="sk">Total Spent</div></div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-head">
+        <h3><i class="fas fa-history"></i>Order History</h3>
+        <a href="book.html" class="btn-copy-ref" style="padding:8px 16px;font-size:.62rem;text-decoration:none">
+          <i class="fas fa-plus"></i> New Order
+        </a>
+      </div>
+      <div class="section-body">
+        <div class="o-table-wrap">
+          <table class="orders-table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Service · Package</th>
+                <th>Amount</th>
+                <th>Payment</th>
+                <th>Status</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody id="ordersBody">
+              <tr><td colspan="6" class="empty-state"><i class="fas fa-box-open"></i>loading your orders…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════ REFERRAL ══════════════════════ -->
+  <div class="p-panel" id="panel-referral">
+    <div class="section-card">
+      <div class="section-head"><h3><i class="fas fa-ticket-alt"></i>Your Referral Code</h3></div>
+      <div class="section-body" id="refSection">
+        <div class="empty-state"><i class="fas fa-circle-notch spin"></i>loading…</div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-head"><h3><i class="fas fa-tag"></i>Your Discount</h3></div>
+      <div class="section-body">
+        <p style="font-size:.88rem;color:rgba(197,198,199,.6);margin-bottom:16px;">
+          If you used a referral code when signing up, your discount is applied automatically to every order.
+        </p>
+        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+          <div style="font-size:2.4rem;font-weight:800;color:var(--cyan);font-family:var(--mono)" id="discountDisplay">0%</div>
+          <div>
+            <div style="font-size:.88rem;font-weight:600;color:var(--gray)" id="discountLabel">No referral discount active</div>
+            <div style="font-family:var(--mono);font-size:.62rem;color:rgba(197,198,199,.38);margin-top:3px" id="discountSub">Sign up with a referral code to unlock discounts</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+  <!-- ?????????????????????????????????????????????????????????????????? WALLET ?????????????????????????????????????????????????????????????????? -->
+  <div class="p-panel" id="panel-wallet">
+    <div class="section-card">
+      <div class="section-head"><h3><i class="fas fa-wallet"></i>Wallet Balance</h3></div>
+      <div class="section-body">
+        <div class="stat-row">
+          <div class="stat-c"><div class="sv" id="pWalletAvailable">?0</div><div class="sk">Available</div></div>
+          <div class="stat-c"><div class="sv" id="pWalletPending">?0</div><div class="sk">Pending Approval</div></div>
+          <div class="stat-c"><div class="sv" id="pWalletNext">?</div><div class="sk">Next Pay</div></div>
+        </div>
+        <div class="wallet-timeline" id="pWalletTimeline"></div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-head"><h3><i class="fas fa-hand-holding-dollar"></i>Request Payout</h3></div>
+      <div class="section-body">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <div class="field-group">
+              <label class="field-label">Amount (?) *</label>
+              <div class="field-wrap"><i class="fas fa-coins field-icon"></i>
+                <input type="number" id="pPayoutAmount" class="f-ctrl" placeholder="1000">
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="field-group">
+              <label class="field-label">Method *</label>
+              <div class="field-wrap"><i class="fas fa-money-check field-icon"></i>
+                <select id="pPayoutMethod" class="f-ctrl">
+                  <option value="bank">Bank Transfer</option>
+                  <option value="upi">UPI</option>
+                  <option value="cash">Cash</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="field-group">
+              <label class="field-label">Notes</label>
+              <div class="field-wrap"><i class="fas fa-note-sticky field-icon"></i>
+                <input type="text" id="pPayoutNote" class="f-ctrl" placeholder="UPI ID / Bank">
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="btn-save" id="btnProfilePayout">
+          <span class="btn-text"><i class="fas fa-paper-plane"></i>Submit Request</span>
+          <span class="btn-loader"><i class="fas fa-circle-notch spin"></i>Sending?</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-head"><h3><i class="fas fa-list"></i>Payout Requests</h3></div>
+      <div class="section-body">
+        <div class="o-table-wrap">
+          <table class="orders-table">
+            <thead>
+              <tr><th>Request ID</th><th>Amount</th><th>Method</th><th>Status</th><th>Date</th></tr>
+            </thead>
+            <tbody id="pPayoutBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- ══════════════════════ SETTINGS ══════════════════════ -->
+  <div class="p-panel" id="panel-settings">
+    <div class="section-card">
+      <div class="section-head"><h3><i class="fas fa-user-edit"></i>Edit Profile</h3></div>
+      <div class="section-body">
+        <div class="alert-box" id="settingsAlert" style="display:none"></div>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="field-group">
+              <label class="field-label">Full name</label>
+              <div class="field-wrap"><i class="fas fa-user field-icon"></i>
+                <input type="text" id="sName" class="f-ctrl" placeholder="Aarav Kumar">
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="field-group">
+              <label class="field-label">WhatsApp / Phone</label>
+              <div class="field-wrap"><i class="fab fa-whatsapp field-icon"></i>
+                <input type="tel" id="sPhone" class="f-ctrl" placeholder="+91 98765 43210">
+              </div>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="field-group">
+              <label class="field-label">Email <span style="opacity:.4">(cannot change)</span></label>
+              <div class="field-wrap"><i class="fas fa-envelope field-icon"></i>
+                <input type="email" id="sEmail" class="f-ctrl" disabled>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="btn-save" id="btnSaveProfile">
+          <span class="btn-text"><i class="fas fa-save"></i>Save Changes</span>
+          <span class="btn-loader"><i class="fas fa-circle-notch spin"></i>Saving…</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-head"><h3><i class="fas fa-trash-alt"></i>Danger Zone</h3></div>
+      <div class="section-body">
+        <div class="danger-section">
+          <p style="font-size:.88rem;color:rgba(197,198,199,.55);margin-bottom:14px;">
+            Logging out will end your session on this device. Your orders and profile are safely saved in the cloud.
+          </p>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <button class="btn-danger" id="btnLogoutAll">
+              <i class="fas fa-sign-out-alt"></i>Sign Out
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════ SECURITY ══════════════════════ -->
+  <div class="p-panel" id="panel-security">
+    <div class="section-card">
+      <div class="section-head"><h3><i class="fas fa-lock"></i>Change Password</h3></div>
+      <div class="section-body">
+        <div class="alert-box" id="pwAlert" style="display:none"></div>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="field-group">
+              <label class="field-label">Current password</label>
+              <div class="field-wrap"><i class="fas fa-lock field-icon"></i>
+                <input type="password" id="pwCurrent" class="f-ctrl" placeholder="Your current password" autocomplete="current-password">
+                <button class="pw-eye" id="pwEye1" type="button"><i class="fas fa-eye"></i></button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="field-group">
+              <label class="field-label">New password</label>
+              <div class="field-wrap"><i class="fas fa-lock field-icon"></i>
+                <input type="password" id="pwNew" class="f-ctrl" placeholder="Min 8 characters" autocomplete="new-password">
+                <button class="pw-eye" id="pwEye2" type="button"><i class="fas fa-eye"></i></button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="field-group">
+              <label class="field-label">Confirm new password</label>
+              <div class="field-wrap"><i class="fas fa-lock field-icon"></i>
+                <input type="password" id="pwConfirm" class="f-ctrl" placeholder="Repeat new password" autocomplete="new-password">
+                <button class="pw-eye" id="pwEye3" type="button"><i class="fas fa-eye"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="btn-save" id="btnChangePw">
+          <span class="btn-text"><i class="fas fa-key"></i>Update Password</span>
+          <span class="btn-loader"><i class="fas fa-circle-notch spin"></i>Updating…</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-head"><h3><i class="fas fa-info-circle"></i>Account Info</h3></div>
+      <div class="section-body">
+        <div class="row g-3" id="accountInfoRows"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<footer class="footer py-4">
+  <div class="container text-center">
+    <p style="font-family:var(--mono);font-size:.6rem;color:rgba(197,198,199,.25);letter-spacing:.12em;">© 2026 TN WEB RATS · All data secured by Firebase · Made in Tamil Nadu</p>
+  </div>
+</footer>
+
+</div><!-- /main-content-wrapper -->
+
+<!-- TOAST -->
+<div class="tnwr-toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="Statics/script.js"></script>
+
+<script type="module">
+/* ═══════════════════════════════════════════════════════
+   CONFIG — replace with your actual Firebase values
+═══════════════════════════════════════════════════════ */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBf1c5bC31M0m5PVX67QsyeiOIS-0acRkI",
+  authDomain: "unofficial-webrats.firebaseapp.com",
+  projectId: "unofficial-webrats",
+  storageBucket: "unofficial-webrats.firebasestorage.app",
+  messagingSenderId: "378552539429",
+  appId: "1:378552539429:web:e4cf876e5b65c9fd4ee2cc",
+  measurementId: "G-JYSYHTJKD7"
+};
+
+const { initializeApp }                          = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+const { getAuth, signOut, onAuthStateChanged,
+        reauthenticateWithCredential,
+        EmailAuthProvider, updatePassword }       = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
+const { getFirestore, doc, getDoc, updateDoc, setDoc, addDoc, increment,
+        collection, query, where, orderBy, limit,
+        getDocs, serverTimestamp, runTransaction } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+
+const app  = initializeApp(FIREBASE_CONFIG);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+const STAFF = ["worker","manager","admin","superadmin","owner"];
+
+let CU = null, CUD = null;
+
+/* ── Auth guard ──────────────────────────────────────── */
+onAuthStateChanged(auth, async user => {
+  if (!user) { window.location.replace("signup.html?return=profile.html&login=1"); return; }
+  CU  = user;
+  const snap = await getDoc(doc(db,"users",user.uid)).catch(()=>null);
+  CUD = snap?.data() || {};
+  if (STAFF.includes(CUD.role)) {
+    document.querySelector(".nav-staff")?.classList.remove("d-none");
+    document.getElementById("tabWallet")?.classList.remove("d-none");
+    _loadWalletProfile();
+  }
+  _populateHero();
+  _loadOrders();
+  _loadReferral();
+  _prefillSettings();
+  _fillAccountInfo();
+});
+
+document.getElementById("navLogout")?.addEventListener("click", async e=>{e.preventDefault();await signOut(auth);window.location.replace("signup.html");});
+document.getElementById("btnLogoutAll")?.addEventListener("click", async()=>{await signOut(auth);window.location.replace("signup.html");});
+
+/* ── Hero ────────────────────────────────────────────── */
+function _populateHero(){
+  const name = CUD.name || "Unknown User";
+  document.getElementById("profileName").textContent  = name;
+  document.getElementById("profileEmail").textContent = CU.email;
+  document.getElementById("profileRole").textContent  = CUD.role || "customer";
+  document.getElementById("avatarInitials").textContent = name.split(" ").map(w=>w[0]).slice(0,2).join("").toUpperCase();
+  const disc = CUD.discountPercent || 0;
+  document.getElementById("profileDiscount").textContent = disc+"%";
+  document.getElementById("discountDisplay").textContent = disc+"%";
+  if (disc > 0) {
+    document.getElementById("discountLabel").textContent = `${disc}% discount applied on all orders`;
+    document.getElementById("discountSub").textContent   = `Code: ${CUD.usedReferralCode || "—"} · Referred by a ${_tierLabel(disc)} member`;
+  }
+}
+
+function _tierLabel(pct){return({5:"Worker",10:"Manager",15:"Admin",20:"Super Admin"})[pct]||"Staff";}
+
+/* ── Load orders ─────────────────────────────────────── */
+async function _loadOrders(){
+  const tbody = document.getElementById("ordersBody");
+  tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:24px;font-family:var(--mono);font-size:.65rem;color:rgba(197,198,199,.22)">loading…</td></tr>`;
+  try{
+    const q = query(collection(db,"orders"), where("customerId","==",CU.uid), orderBy("createdAt","desc"));
+    const snap = await getDocs(q);
+    const orders = snap.docs.map(d=>({id:d.id,...d.data()}));
+    if(!orders.length){
+      tbody.innerHTML=`<tr><td colspan="6"><div class="empty-state"><i class="fas fa-box-open"></i>no orders yet — <a href="book.html" style="color:var(--cyan)">book your first project!</a></div></td></tr>`;
+      return;
+    }
+    // Stats
+    document.getElementById("statTotal").textContent  = orders.length;
+    document.getElementById("statActive").textContent = orders.filter(o=>o.status==="in_progress").length;
+    document.getElementById("statDone").textContent   = orders.filter(o=>o.status==="complete").length;
+    const spend = orders.reduce((s,o)=>s+(Number(o.finalPrice)||0),0);
+    document.getElementById("statSpend").textContent = "₹"+spend.toLocaleString("en-IN");
+
+    tbody.innerHTML = orders.map(o=>`
+      <tr>
+        <td style="font-family:var(--mono);font-size:.68rem;color:var(--cyan)">${o.id.slice(0,10)}…</td>
+        <td><strong>${o.service||"—"}</strong><br><small style="color:rgba(197,198,199,.38)">${o.package||""}</small></td>
+        <td style="color:var(--cyan);font-weight:700">₹${(o.finalPrice||0).toLocaleString("en-IN")}</td>
+        <td><span class="s-pill sp-${(o.paymentStatus||"unpaid").replace(/\s/,"_")}">${o.paymentStatus||"unpaid"}</span></td>
+        <td><span class="s-pill sp-${(o.status||"pending").replace(/\s/,"_")}">${(o.status||"pending").replace("_"," ")}</span></td>
+        <td style="font-size:.75rem;color:rgba(197,198,199,.35)">${o.createdAt?.toDate?.().toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"})||"—"}</td>
+      </tr>`).join("");
+  }catch(e){tbody.innerHTML=`<tr><td colspan="6"><div class="empty-state"><i class="fas fa-exclamation-circle"></i>could not load orders</div></td></tr>`;}
+}
+
+/* ── Referral section ────────────────────────────────── */
+async function _loadReferral(){
+  const sec = document.getElementById("refSection");
+  const code = CUD.referralCode;
+  if(!code){
+    sec.innerHTML=`<div class="no-ref-box"><i class="fas fa-ticket-alt"></i>You don't have a referral code yet.<br>Referral codes are assigned to workers, managers &amp; admins.<br><a href="help.html" style="color:var(--cyan)">Learn more about the referral programme →</a></div>`;
+    return;
+  }
+  // Load usage stats
+  let timesUsed=0;
+  try{const snap=await getDoc(doc(db,"referralCodes",code));timesUsed=snap.data()?.timesUsed||0;}catch(e){}
+  const pct = CUD.discountPercent||0;
+
+  sec.innerHTML=`
+    <div class="ref-box">
+      <div>
+        <div class="ref-code">${code}</div>
+        <div class="ref-tier">${_tierLabel(pct)} code · ${pct}% discount for referrals</div>
+      </div>
+      <button class="btn-copy-ref" id="btnCopyCode"><i class="fas fa-copy"></i> Copy Code</button>
+    </div>
+    <div class="ref-stats">
+      <div class="ref-stat"><div class="rv">${timesUsed}</div><div class="rk">Times Used</div></div>
+      <div class="ref-stat"><div class="rv">${pct}%</div><div class="rk">Discount Given</div></div>
+      <div class="ref-stat"><div class="rv">₹${(timesUsed*20).toLocaleString("en-IN")}</div><div class="rk">Referral Bonus</div></div>
+    </div>
+    <p style="font-family:var(--mono);font-size:.62rem;color:rgba(197,198,199,.28);margin-top:14px;letter-spacing:.07em;">
+      Share this code with friends. When they sign up using it, they get a ${pct}% discount — and you earn a ₹20 bonus per referral in your next payroll cycle.
+    </p>`;
+
+  document.getElementById("btnCopyCode")?.addEventListener("click",()=>{
+    navigator.clipboard.writeText(code).then(()=>showToast("Code copied!","ok")).catch(()=>{});
+  });
+}
+
+/* ── Settings: prefill ───────────────────────────────── */
+function _prefillSettings(){
+  document.getElementById("sName").value  = CUD.name  || "";
+  document.getElementById("sPhone").value = CUD.phone || "";
+  document.getElementById("sEmail").value = CU.email  || "";
+}
+
+document.getElementById("btnSaveProfile")?.addEventListener("click",async function(){
+  const name  = document.getElementById("sName").value.trim();
+  const phone = document.getElementById("sPhone").value.trim();
+  if(!name){showToast("Name cannot be empty","err");return;}
+  this.classList.add("loading");
+  try{
+    await updateDoc(doc(db,"users",CU.uid),{name,phone,updatedAt:serverTimestamp()});
+    CUD.name=name;CUD.phone=phone;
+    _populateHero();
+    showToast("Profile saved ✓","ok");
+  }catch(e){showToast("Error saving — try again","err");}
+  this.classList.remove("loading");
+});
+
+/* ── Password change ─────────────────────────────────── */
+[["pwEye1","pwCurrent"],["pwEye2","pwNew"],["pwEye3","pwConfirm"]].forEach(([eid,fid])=>{
+  document.getElementById(eid)?.addEventListener("click",function(){
+    const inp=document.getElementById(fid),ico=this.querySelector("i");
+    inp.type=inp.type==="password"?"text":"password";
+    ico.className=inp.type==="password"?"fas fa-eye":"fas fa-eye-slash";
+  });
+});
+
+document.getElementById("btnChangePw")?.addEventListener("click",async function(){
+  const cur    = document.getElementById("pwCurrent").value;
+  const newPw  = document.getElementById("pwNew").value;
+  const confPw = document.getElementById("pwConfirm").value;
+  const alertEl= document.getElementById("pwAlert");
+  alertEl.style.display="none";
+
+  if(!cur||!newPw||!confPw){showAlert("pwAlert","all fields required","error");return;}
+  if(newPw.length<8){showAlert("pwAlert","new password must be 8+ characters","error");return;}
+  if(newPw!==confPw){showAlert("pwAlert","passwords do not match","error");return;}
+
+  this.classList.add("loading");
+  try{
+    const cred=EmailAuthProvider.credential(CU.email,cur);
+    await reauthenticateWithCredential(CU,cred);
+    await updatePassword(CU,newPw);
+    showToast("Password updated ✓","ok");
+    ["pwCurrent","pwNew","pwConfirm"].forEach(id=>document.getElementById(id).value="");
+  }catch(e){
+    const msg=e.code==="auth/wrong-password"?"current password is incorrect":"error updating — try again";
+    showAlert("pwAlert",msg,"error");
+  }
+  this.classList.remove("loading");
+});
+
+/* ── Account info ────────────────────────────────────── */
+function _fillAccountInfo(){
+  const rows=[
+    ["User ID",    CU.uid.slice(0,18)+"…"],
+    ["Email",      CU.email],
+    ["Role",       CUD.role||"customer"],
+    ["Member since", CUD.createdAt?.toDate?.().toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"})||"—"],
+    ["Referral discount", (CUD.discountPercent||0)+"%"],
+    ["Referred by", CUD.usedReferralCode||"None"]
+  ];
+  document.getElementById("accountInfoRows").innerHTML = rows.map(([k,v])=>`
+    <div class="col-md-6">
+      <div style="background:rgba(11,12,16,.5);border:1px solid rgba(102,252,241,.07);border-radius:10px;padding:13px 16px;">
+        <div style="font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(197,198,199,.3);margin-bottom:3px">${k}</div>
+        <div style="font-size:.88rem;font-weight:600;color:var(--gray)">${v}</div>
+      </div>
+    </div>`).join("");
+}
+
+/* ??? Wallet (Staff) ??? */
+const PAYROLL_CONFIG = { minPayout: 100, payoutDay: 1 };
+
+function _calcNextPayDate(baseDate=new Date()){
+  const day = PAYROLL_CONFIG.payoutDay || 1;
+  return new Date(baseDate.getFullYear(), baseDate.getMonth()+1, day);
+}
+
+async function _ensureWalletProfile(){
+  const ref = doc(db,"wallets",CU.uid);
+  const snap = await getDoc(ref).catch(()=>null);
+  if (snap?.exists()) return snap.data();
+  const nextPay = _calcNextPayDate(new Date());
+  const data = { available:0, pendingApproval:0, pendingPayout:0, lifetimePaid:0, nextPayDate: nextPay, lastPayDate:null, updatedAt: serverTimestamp() };
+  await setDoc(ref, data, { merge:true });
+  return data;
+}
+
+function _renderWalletProfile(wallet){
+  const available = Number(wallet.available||0);
+  const pending = Number(wallet.pendingApproval||0);
+  const next = wallet.nextPayDate?.toDate ? wallet.nextPayDate.toDate() : wallet.nextPayDate;
+  document.getElementById("pWalletAvailable").textContent = "?"+available.toLocaleString("en-IN");
+  document.getElementById("pWalletPending").textContent = "?"+pending.toLocaleString("en-IN");
+  document.getElementById("pWalletNext").textContent = next ? next.toLocaleDateString("en-IN",{day:"numeric",month:"short"}) : "?";
+
+  const timeline = [];
+  if ((wallet.pendingApproval||0) > 0) timeline.push({t:"Pending approval", s:`?${pending.toLocaleString("en-IN")} awaiting owner approvals`});
+  timeline.push({t:"Next payroll", s: next ? next.toLocaleDateString("en-IN",{day:"numeric",month:"short"}) : "?"});
+
+  document.getElementById("pWalletTimeline").innerHTML = timeline.map(i=>`
+    <div class="wallet-item">
+      <div class="wt-title">${i.t}</div>
+      <div class="wt-sub">${i.s}</div>
+    </div>`).join("") || `<div class="empty-state"><i class="fas fa-wallet"></i>no timeline yet</div>`;
+}
+
+async function _loadProfilePayouts(){
+  document.getElementById("pPayoutBody").innerHTML = `<tr><td colspan="5" class="empty-state"><i class="fas fa-circle-notch spin"></i>loading?</td></tr>`;
+  try{
+    const snap = await getDocs(query(collection(db,"payoutRequests"), where("uid","==",CU.uid), orderBy("createdAt","desc"), limit(25)));
+    const rows = snap.docs.map(d=>({id:d.id,...d.data()}));
+    document.getElementById("pPayoutBody").innerHTML = rows.map(r=>`
+      <tr>
+        <td style="font-family:var(--mono);font-size:.68rem;color:var(--cyan)">${r.id.slice(0,8)}?</td>
+        <td style="font-family:var(--mono);color:var(--cyan)">?${Number(r.amount||0).toLocaleString("en-IN")}</td>
+        <td>${r.method||"?"}</td>
+        <td><span class="s-pill sp-${r.status||"pending"}">${r.status||"pending"}</span></td>
+        <td style="font-size:.75rem;color:rgba(197,198,199,.35)">${r.createdAt?.toDate?.().toLocaleDateString("en-IN")||"?"}</td>
+      </tr>`).join("") || `<tr><td colspan="5"><div class="empty-state"><i class="fas fa-hand-holding-dollar"></i>no payout requests</div></td></tr>`;
+  }catch(e){
+    document.getElementById("pPayoutBody").innerHTML = `<tr><td colspan="5"><div class="empty-state">error loading payouts</div></td></tr>`;
+  }
+}
+
+async function _loadWalletProfile(){
+  try{
+    const wallet = await _ensureWalletProfile();
+    _renderWalletProfile(wallet);
+    await _loadProfilePayouts();
+  }catch(e){ console.error(e); }
+}
+
+async function _submitProfilePayoutTx({ amount, method, note }){
+  const walletRef = doc(db,"wallets",CU.uid);
+  const reqRef = doc(collection(db,"payoutRequests"));
+
+  await runTransaction(db, async tx => {
+    const walletSnap = await tx.get(walletRef);
+    if (!walletSnap.exists()) throw new Error("wallet_missing");
+
+    const wallet = walletSnap.data() || {};
+    const available = Number(wallet.available || 0);
+    const pendingPayout = Number(wallet.pendingPayout || 0);
+
+    if (amount < PAYROLL_CONFIG.minPayout) throw new Error("min_payout");
+    if (amount > available) throw new Error("insufficient");
+
+    tx.set(reqRef,{
+      uid: CU.uid,
+      userName: CUD.name||CU.email,
+      amount,
+      method,
+      note,
+      status:"pending",
+      createdAt: serverTimestamp()
+    });
+
+    tx.set(walletRef,{
+      available: available - amount,
+      pendingPayout: pendingPayout + amount,
+      updatedAt: serverTimestamp()
+    }, { merge:true });
+  });
+
+  return reqRef.id;
+}
+
+document.getElementById("btnProfilePayout")?.addEventListener("click", async function(){
+  const amt = Number(document.getElementById("pPayoutAmount").value||0);
+  const method = document.getElementById("pPayoutMethod").value||"bank";
+  const note = document.getElementById("pPayoutNote").value||"";
+  if (!amt || amt < PAYROLL_CONFIG.minPayout){ showToast(`Minimum payout is ?${PAYROLL_CONFIG.minPayout}`,"err"); return; }
+  this.classList.add("loading");
+  try{
+    await _submitProfilePayoutTx({ amount: amt, method, note });
+    document.getElementById("pPayoutAmount").value="";
+    document.getElementById("pPayoutNote").value="";
+    showToast("Payout request submitted","ok");
+    await _loadWalletProfile();
+  }catch(e){
+    const key = e?.message || "";
+    if (key === "insufficient") showToast("Insufficient balance","err");
+    else if (key === "min_payout") showToast(`Minimum payout is ?${PAYROLL_CONFIG.minPayout}`,"err");
+    else showToast("Error submitting payout","err");
+  }
+  this.classList.remove("loading");
+});
+
+/* ── Tab switching ───────────────────────────────────── */
+document.querySelectorAll(".p-tab").forEach(tab=>{
+  tab.addEventListener("click",()=>{
+    document.querySelectorAll(".p-tab").forEach(t=>t.classList.remove("active"));
+    document.querySelectorAll(".p-panel").forEach(p=>p.classList.remove("active"));
+    tab.classList.add("active");
+    document.getElementById("panel-"+tab.dataset.ptab)?.classList.add("active");
+  });
+});
+
+/* ── Toast & Alert helpers ───────────────────────────── */
+window.showToast=function(msg,type=""){
+  const t=document.getElementById("toast");
+  t.textContent=msg;t.className="tnwr-toast show "+type;
+  clearTimeout(t._t);t._t=setTimeout(()=>{t.className="tnwr-toast";},3500);
+};
+function showAlert(id,msg,type="error"){
+  const a=document.getElementById(id);
+  if(!a)return;
+  a.className="alert-box "+type+" show";
+  a.textContent=msg;a.style.display="block";
+}
+
+// URL hash → open correct tab
+const hash=location.hash.replace("#","");
+if(hash&&document.querySelector(`[data-ptab="${hash}"]`)){
+  document.querySelector(`[data-ptab="${hash}"]`)?.click();
+}
+</script>
+</body>
+</html>
